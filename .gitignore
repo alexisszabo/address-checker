@@ -37,3 +37,6 @@ yarn-debug.log*
 
 # Ignore RubyMine Directory
 /.idea
+
+# Ignore mac junk
+.DS_Store
