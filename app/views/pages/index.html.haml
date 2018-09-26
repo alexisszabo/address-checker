@@ -1,4 +1,15 @@
-.field
-  %h1.title Address Checker
-  %textarea.textarea
-  %button.button{:type => "button"} Check Addresses
+%div{'data-controller': 'address-checker'}
+  .section
+    %h1.title.is-1 Address Checker
+    .box
+      //%button.button{type: 'button', 'data-action': 'click->address-checker#check'} Check Addresses
+      =form_with url: '/address_checker/check', html: {data: {type: 'html', action: "ajax:success->address-checker#displayResults"}} do |form|
+        .field
+          .label Paste Exported Addresses Here
+          .control
+            %textarea.textarea
+        =form.submit 'Check Addresses', class: 'button'
+  .section{style: 'display:none'}
+    %h2.title.is-2 Results
+    #results
+    %button.button{type: 'button'} Download CSV
