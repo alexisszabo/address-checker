@@ -44,6 +44,9 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
+    amatch (0.4.0)
+      mize
+      tins (~> 1.0)
     archive-zip (0.11.0)
       io-like (~> 0.3.0)
     arel (9.0.0)
@@ -108,12 +111,16 @@ GEM
     mini_mime (1.0.1)
     mini_portile2 (2.3.0)
     minitest (5.11.3)
+    mize (0.3.5)
+      protocol
     msgpack (1.2.4)
     multi_json (1.13.1)
     nio4r (2.3.1)
     nokogiri (1.8.4)
       mini_portile2 (~> 2.3.0)
     pg (1.1.3)
+    protocol (1.0.1)
+      ruby_parser (~> 3.0)
     public_suffix (3.0.3)
     puma (3.12.0)
     rack (2.0.5)
@@ -184,6 +191,7 @@ GEM
     thor (0.20.0)
     thread_safe (0.3.6)
     tilt (2.0.8)
+    tins (1.16.3)
     turbolinks (5.2.0)
       turbolinks-source (~> 5.2)
     turbolinks-source (5.2.0)
@@ -210,6 +218,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  amatch
   bootsnap (>= 1.1.0)
   byebug
   capybara (>= 2.15)

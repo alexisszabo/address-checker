@@ -19,6 +19,9 @@ gem 'uglifier', '>= 1.3.0'
 # Use webpacker to manage application-like javasdcript in Rails
 gem 'webpacker'
 
+# Use 'amatch' for trying to catch spelling mistakes in street names an give appropriate suggestions
+gem 'amatch'
+
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
 gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
