@@ -7,8 +7,16 @@
         .field
           .label Paste Exported Addresses Here
           .control
-            %textarea.textarea
-        =form.submit 'Check Addresses', class: 'button'
+            = text_area_tag :addresses, nil, class: 'textarea'
+        .field
+          .label Country
+          .control.select
+            = select_tag :country, options_for_select(['Canada'])
+        .field
+          .label Province
+          .control.select
+            = select_tag :country, options_for_select(['British Columbia'])
+        =form.submit 'Check Addresses', class: 'button is-link'
   .section{style: 'display:none'}
     %h2.title.is-2 Results
     #results
