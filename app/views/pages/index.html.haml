@@ -15,7 +15,7 @@
         .field
           .label Province
           .control.select
-            = select_tag :country, options_for_select(['British Columbia'])
+            = select_tag :province, options_for_select(['British Columbia'])
         =form.submit 'Check Addresses', class: 'button is-link'
   .section{style: 'display:none'}
     %h2.title.is-2 Results
