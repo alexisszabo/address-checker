@@ -1,8 +1,7 @@
 %div{'data-controller': 'address-checker'}
-  .section
+  .section{style:'padding-top: 1.5em; padding-bottom-0.75em'}
     .box
-      //%button.button{type: 'button', 'data-action': 'click->address-checker#check'} Check Addresses
-      =form_with url: '/address_checker/check', html: {data: {type: 'html', action: "ajax:success->address-checker#displayResults"}} do |form|
+      =form_with url: '/address_checker/check', html: { data: { type: "html", action: "ajax:success->address-checker#displayResults ajax:complete->address-checker#completeResults ajax:beforeSend->address-checker#beforeSendResults ajax:error->address-checker#errorResults"}} do |form|
         .field
           .label Paste Exported Addresses Here
           .control
@@ -15,8 +14,20 @@
           .label Province
           .control.select
             = select_tag :province, options_for_select(['British Columbia'])
-        =form.submit 'Check Addresses', class: 'button is-link'
-  .section{style: 'display:none'}
-    %h2.title.is-2 Results
-    #results
-    %button.button{type: 'button'} Download CSV
+        .field
+          .label Statuses to Check
+          .control
+            - statuses_default_on = ['New', 'Valid', 'Do not call']
+            - statuses_default_off = ['Moved', 'Duplicate', 'Valid']
+            - statuses_default_on.each do |status|
+              .is-inline
+                = check_box_tag 'statuses[]', status, true
+                = label_tag status, status
+            - statuses_default_off.each do |status|
+              .is-inline
+                = check_box_tag 'statuses[]', status, false
+                = label_tag status, status
+        =button_tag 'Check Addresses', class: 'button is-link', 'data-target':'address-checker.submit'
+  .section{style: 'padding-top: 0.75em; padding-bottom: 1.5em'}
+    #results{'data-target': 'address-checker.results'}
+    //%button.button{type: 'button'} Download CSV

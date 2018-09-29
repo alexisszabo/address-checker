@@ -2,15 +2,8 @@ require 'csv'
 require 'amatch'
 include Amatch
 
-##### Alright, so this is taken from a quickly hacked together script
-##### In the future we need to:
-#####  - Store stuff in the database instead of files
-
 module AddressChecker
-
-  public
-
-  def check_addresses_from_csv(csv_string, country, province, valid_languages)
+  def check_addresses(addresses, country, province, valid_languages, statuses)
     ##### Load all the street names for cities for this country province
 
     street_name_in_city = {}
@@ -34,7 +27,7 @@ module AddressChecker
           end
         end
       end
-    end 
+    end
 
     duplicate_addresses = []
     bad_address_format = []
@@ -45,14 +38,13 @@ module AddressChecker
     needs_to_be_blanked = []
     all_database_addresses = {}
 
-    CSV.parse(csv_string, headers: true, col_sep: "\t", quote_char: '|') do |row|
+    addresses.each do |row|
       address_without_suite = sanitize_address(row['Address'])
       street_name = address_without_suite.split(/\s/).drop(1).join(' ')
       original_address = format_address(row['Suite'], row['Address'])
       address = format_address(sanitize_suite(row['Suite']), sanitize_address(row['Address']))
 
-      if row['Status'] == 'Valid' || row['Status'] == 'New'
-
+      if statuses.include?(row['Status'])
         bad_address_format << {original: original_address, sanitized: address} if original_address != address && street_name.split.length >= 2
 
         if street_name_in_city[row['City']]
@@ -62,7 +54,7 @@ module AddressChecker
               alternate_cities << city if street_name_in_city[city][street_name]
             end
             if alternate_cities.length > 0
-              wrong_cities << ["#{address}, #{row['City']}", alternate_cities.join(', or ')]
+              wrong_cities << {address: "#{address}, #{row['City']}", suggested_city: alternate_cities.join(', or ')}
             else
               possibilities = []
               street_name_in_city[row['City']].each do |master_street, val|
@@ -84,7 +76,7 @@ module AddressChecker
           needs_to_be_blanked << hash
         end
 
-        wrong_languages << "#{address}: #{row['Language']}" unless valid_languages.include? row['Language']
+        wrong_languages << "#{address}: #{row['Language']}" if (valid_languages.length > 1 && !(valid_languages.include? row['Language']))
 
         duplicate_addresses << address if all_database_addresses[address]
       end
@@ -103,7 +95,33 @@ module AddressChecker
 
   end
 
+  def fix_addresses(address_hash)
+    address_hash.each do |id,a|
+      a['Address'] = sanitize_address(a)
+    end
+    address_hash
+  end
+
   private
+
+  ##### These are taken from:
+  #####   Canada Post "Symbols and Abbreviations Recognized by Canada Post"
+  #####   https://www.canadapost.ca/tools/pg/manual/PGaddress-e.asp?ecid=murl10006450
+  @@preferred_street_names =
+    [
+      {starts_with: %w(Ave),           replace_with: 'Ave'},
+      {starts_with: %w(Boulevard),     replace_with: 'Blvd'},
+      {starts_with: %w(Centre Center), replace_with: 'Ctr'},
+      {starts_with: %w(Cl),            replace_with: 'Close'},
+      {starts_with: %w(Cres),          replace_with: 'Cres'},
+      {starts_with: %w(Court Ct),      replace_with: 'Crt'},
+      {starts_with: %w(Dr),            replace_with: 'Dr'},
+      {starts_with: %w(Lane),          replace_with: 'Ln'},
+      {starts_with: %w(Place),         replace_with: 'Pl'},
+      {starts_with: %w(Road),          replace_with: 'Rd'},
+      {starts_with: %w(Square),        replace_with: 'Sq'},
+      {starts_with: %w(St),            replace_with: 'St'},
+    ]
 
   def format_address(suite, address)
     suite ? "#{suite}, #{address}" : address
@@ -117,28 +135,20 @@ module AddressChecker
     ##### Capitalize the first letter of any words that don't being with a number
     address = address.gsub(/\S+/) { |word| /^[0-9]/.match(word) ? word : word[0].capitalize + word[1..-1] }
 
+    #### If street name has a direction at the end, put it in front of the street name (ie. East/West/North/South)
+
     ##### Use preferred street names
-    [
-      {starts_with: 'Cres',      replace_with: 'Crescent'},
-      {starts_with: 'Dr',        replace_with: 'Dr'},
-      {starts_with: 'Ave',       replace_with: 'Ave'},
-      {starts_with: 'Ct',        replace_with: 'Crt'},
-      {starts_with: 'Court',     replace_with: 'Crt'},
-      {starts_with: 'Boulevard', replace_with: 'Blvd'},
-      {starts_with: 'Cl',        replace_with: 'Close'},
-      {starts_with: 'Road',      replace_with: 'Rd'},
-      {starts_with: 'Lane',      replace_with: 'Ln'},
-      {starts_with: 'Square',    replace_with: 'Sq'},
-      {starts_with: 'Gr',        replace_with: 'Green'},
-      {starts_with: 'St',        replace_with: 'St'},
-      {starts_with: 'Place',     replace_with: 'Pl'},
-    ].each do |fix|
-      address = replace_street_name(address, fix[:starts_with], fix[:replace_with])
+    @@preferred_street_names.each do |fix|
+      fix[:starts_with].each do |starts_with|
+        address = replace_street_name(address, starts_with, fix[:replace_with])
+      end
     end
 
     address
   end
 
+  ##### This replaces the street name (assumed to be the last word in the address)
+  ##### With the preferred abbreviation
   def replace_street_name(address, search, replace)
     address.gsub(Regexp.new('(\s+)'+search+'\S*$', Regexp::IGNORECASE), '\\1'+replace)
   end
