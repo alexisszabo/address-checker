@@ -51,9 +51,17 @@
         %h4.title.is-4 Remove Details:
         %h6.subtitle.is-6 Keep in mind local privacy laws
         %table.table.is-bordered.is-striped.is-hoverable
-          - @needs_to_be_blanked.each do |text|
+          %tr
+            %th Address
+            %th Name
+            %th Telephone
+            %th Postal Code
+          - @needs_to_be_blanked.each do |not_blank|
             %tr
-              %td= text
+              %td= not_blank[:address]
+              %td= not_blank[:remove_name]
+              %td= not_blank[:remove_telephone]
+              %td= not_blank[:remove_postal_code]
 
     -if @wrong_languages.length > 0
       .box
