@@ -18,7 +18,7 @@
           .label Statuses to Check
           .control
             - statuses_default_on = ['New', 'Valid', 'Do not call']
-            - statuses_default_off = ['Moved', 'Duplicate', 'Valid']
+            - statuses_default_off = ['Moved', 'Duplicate', 'Not valid']
             - statuses_default_on.each do |status|
               .is-inline
                 = check_box_tag 'statuses[]', status, true
