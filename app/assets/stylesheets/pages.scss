@@ -15,4 +15,8 @@
 }
 .choices__input, .choices__input--cloned {
   min-width: 300px;
+  background-color: unset;
+}
+.choices__inner {
+  background-color: unset;
 }
