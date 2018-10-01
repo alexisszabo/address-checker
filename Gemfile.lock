@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/mvanh/lockup.git
+  revision: 31b3dc1dc726aa27b346e160b04fa30b17ff5ccc
+  branch: add_credentials_support
+  specs:
+    lockup (1.4.3)
+      rails (>= 3, < 6)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -126,7 +134,7 @@ GEM
       nokogiri (>= 1.5.9)
     mail (2.7.0)
       mini_mime (>= 0.1.1)
-    marcel (0.3.2)
+    marcel (0.3.3)
       mimemagic (~> 0.3.2)
     method_source (0.9.0)
     mimemagic (0.3.2)
@@ -261,6 +269,7 @@ DEPENDENCIES
   haml-rails
   jbuilder (~> 2.5)
   listen (>= 3.0.5, < 3.2)
+  lockup!
   pg
   puma (~> 3.11)
   rails (~> 5.2.1)
