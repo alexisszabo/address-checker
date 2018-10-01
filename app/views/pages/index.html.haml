@@ -9,11 +9,11 @@
         .field
           .label Country
           .control.select
-            = select_tag :country, options_for_select(['Canada'])
+            = select_tag :country, options_for_select(@countries)
         .field
           .label Province
           .control.select
-            = select_tag :province, options_for_select(['British Columbia'])
+            = select_tag :province, options_for_select(@provinces)
         .field
           .label Kind
           .control
@@ -26,13 +26,11 @@
         .field.foreign-language-only{style: 'display:none'}
           .label Statuses to Check
           .control
-            - statuses_default_on = ['New', 'Valid', 'Do not call']
-            - statuses_default_off = ['Moved', 'Duplicate', 'Not valid']
-            - statuses_default_on.each do |status|
+            - @statuses_default_on.each do |status|
               .is-inline
                 = check_box_tag 'statuses[]', status, true
                 = label_tag status, status
-            - statuses_default_off.each do |status|
+            - @statuses_default_off.each do |status|
               .is-inline
                 = check_box_tag 'statuses[]', status, false
                 = label_tag status, status
