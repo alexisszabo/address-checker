@@ -20,4 +20,28 @@ export default class extends Controller {
     let [data, status, xhr]  = event.detail;
     this.resultsTarget.innerHTML = xhr.response;
   }
+
+  kindIsLocal (event) {
+    this.hideElements(document.getElementsByClassName('foreign-language-only'));
+    this.showElements(document.getElementsByClassName('local-only'));
+  }
+
+  kindIsForeignLanguage (event) {
+    this.hideElements(document.getElementsByClassName('local-only'));
+    this.showElements(document.getElementsByClassName('foreign-language-only'));
+  }
+
+  //Internal Routines
+
+  hideElements (elements) {
+    for (let element of elements) {
+      element.style.display = 'none'
+    }
+  }
+
+  showElements (elements) {
+    for (let element of elements) {
+      element.style.display = ''
+    }
+  }
 }

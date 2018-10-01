@@ -3,7 +3,7 @@ require 'amatch'
 include Amatch
 
 module AddressChecker
-  def check_addresses(addresses, country, province, valid_languages, statuses)
+  def check_addresses(addresses, kind, country, province, valid_languages, statuses)
     ##### Load all the street names for cities for this country province
 
     street_name_in_city = {}
@@ -39,12 +39,14 @@ module AddressChecker
     all_database_addresses = {}
 
     addresses.each do |row|
+      next unless row['Address']
+      next if kind == 'Local' && row['Kind'] != 'Local'
       address_without_suite = sanitize_address(row['Address'])
       street_name = address_without_suite.split(/\s/).drop(1).join(' ')
       original_address = format_address(row['Suite'], row['Address'])
       address = format_address(sanitize_suite(row['Suite']), sanitize_address(row['Address']))
 
-      if statuses.include?(row['Status'])
+      if kind == 'Local' || statuses.include?(row['Status'])
         bad_address_format << {original: original_address, sanitized: address} if original_address != address && street_name.split.length >= 2
 
         if street_name_in_city[row['City']]
@@ -80,7 +82,7 @@ module AddressChecker
 
         duplicate_addresses << address if all_database_addresses[address]
       end
-      all_database_addresses[address] = {status: row['Status'], language: row['Language'], date_modified: DateTime.parse(row['Modified'])}
+      all_database_addresses[address] = true
     end
 
     {
@@ -131,11 +133,23 @@ module AddressChecker
     ##### Remove any Trailing Periods or whitespace
     address = address.chomp('.')
     address = address.chomp(' ')
-    
+
     ##### Capitalize the first letter of any words that don't being with a number
     address = address.gsub(/\S+/) { |word| /^[0-9]/.match(word) ? word : word[0].capitalize + word[1..-1] }
 
-    #### If street name has a direction at the end, put it in front of the street name (ie. East/West/North/South)
+    ##### If street name has a direction at the end, put it in front of the street name (Vancouver)
+    ##### ie. 1234 49th Ave East -> 1234 E 49th Ave
+    if (match = address.match(/(^[0-9]+)\s+([0-9]+)(st|nd|rd|th)\s+(\w+)\s+(East|West|North|South)/))
+      number, street1, street2, street3, direction = match.captures
+      address = "#{number} #{direction[0].capitalize} #{street1}#{street2} #{street3}"
+    end
+
+    ##### If street has a single letter, capitalize it (Surrey, Maple Ridge)
+    ##### ie. 1234 158a St -> 1234 158A St
+    if (match = address.match(/^([0-9]+)\s+([0-9]+[a-z])\s+(.*)/))
+      number, street1, street2, = match.captures
+      address = "#{number} #{street1.upcase} #{street2}"
+    end
 
     ##### Use preferred street names
     @@preferred_street_names.each do |fix|

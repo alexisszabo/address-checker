@@ -1,89 +1,88 @@
--if @has_addresses
-  - if @needs_manual_fixes
-    %h3.title.is-3 Manual Fixes Needed
-    %h5.subtitle.is-5 Please manually fix up the following before downloading the fixed list of addresses for import
-    .is-divider
+- if @needs_manual_fixes
+  %h3.title.is-3 Manual Fixes Needed
+  %h5.subtitle.is-5 Please manually fix up the following before downloading the fixed list of addresses for import
+  .is-divider
 
-    - if @duplicate_addresses.length > 0
-      .box
-        %h4.title.is-4 Duplicate Addresses. Please delete one of the duplicates:
-        %table.table.is-bordered.is-striped.is-hoverable
-          - @duplicate_addresses.each do |text|
-            %tr
-              %td= text
-
-    -if @unknown_cities.length > 0
-      .box
-        %h4.title.is-4 Wrong (mispelled?) city. Please correct:
-        %h6.subtitle.is-6 It could be that your city is not yet supported. If that's the case, let us know.
-        %table.table.is-bordered.is-striped.is-hoverable
-          - @unknown_cities.each do |text|
-            %tr
-              %td= text
-
-    -if @wrong_cities.length > 0
-      .box
-        %h4.title.is-4 Wrong city for street? Please correct:
-        %table.table.is-bordered.is-striped.is-hoverable
+  - if @duplicate_addresses.length > 0
+    .box
+      %h4.title.is-4 Duplicate Addresses. Please delete one of the duplicates:
+      %table.table.is-bordered.is-striped.is-hoverable
+        - @duplicate_addresses.each do |text|
           %tr
-            %th Address
-            %th Suggested City
-          - @wrong_cities.each do |wrong|
-            %tr
-              %td= wrong[:address]
-              %td= wrong[:suggested_city]
+            %td= text
 
-    -if @unknown_street_name.length > 0
-      .box
-        %h4.title.is-4 Wrong (mispelled?) street or city name. Please fix:
-        %h6.subtitle.is-6 It could be that this street needs to be added to our info. If that's the case, let us know.
-        %table.table.is-bordered.is-striped.is-hoverable
+  -if @unknown_cities.length > 0
+    .box
+      %h4.title.is-4 Wrong (mispelled?) city. Please correct:
+      %h6.subtitle.is-6 It could be that your city is not yet supported. If that's the case, let us know.
+      %table.table.is-bordered.is-striped.is-hoverable
+        - @unknown_cities.each do |text|
           %tr
-            %th Address
-            %th Potential Corrections
-          - @unknown_street_name.each do |unknown|
-            %tr
-              %td= unknown[:address]
-              %td= unknown[:possibilities].join(", ")
+            %td= text
 
-    -if @needs_to_be_blanked.length > 0
-      .box
-        %h4.title.is-4 Remove Details:
-        %h6.subtitle.is-6 Keep in mind local privacy laws
-        %table.table.is-bordered.is-striped.is-hoverable
+  -if @wrong_cities.length > 0
+    .box
+      %h4.title.is-4 Wrong city for street? Please correct:
+      %table.table.is-bordered.is-striped.is-hoverable
+        %tr
+          %th Address
+          %th Suggested City
+        - @wrong_cities.each do |wrong|
           %tr
-            %th Address
-            %th Name
-            %th Telephone
-            %th Postal Code
-          - @needs_to_be_blanked.each do |not_blank|
-            %tr
-              %td= not_blank[:address]
-              %td= not_blank[:remove_name]
-              %td= not_blank[:remove_telephone]
-              %td= not_blank[:remove_postal_code]
+            %td= wrong[:address]
+            %td= wrong[:suggested_city]
 
-    -if @wrong_languages.length > 0
-      .box
-        %h4.title.is-4 Wrong Language. Fix Language or Status:
-        %table.table.is-bordered.is-striped.is-hoverable
-          - @wrong_languages.each do |text|
-            %tr
-              %td= text
+  -if @unknown_street_name.length > 0
+    .box
+      %h4.title.is-4 Wrong (mispelled?) street or city name. Please fix:
+      %h6.subtitle.is-6 It could be that this street needs to be added to our info. If that's the case, let us know.
+      %table.table.is-bordered.is-striped.is-hoverable
+        %tr
+          %th Address
+          %th Potential Corrections
+        - @unknown_street_name.each do |unknown|
+          %tr
+            %td= unknown[:address]
+            %td= unknown[:possibilities].join(", ")
 
-  -if @needs_auto_fixes
-    -if @bad_address_format.length > 0
+  -if @needs_to_be_blanked.length > 0
+    .box
+      %h4.title.is-4 Remove Details:
+      %h6.subtitle.is-6 Keep in mind local privacy laws
+      %table.table.is-bordered.is-striped.is-hoverable
+        %tr
+          %th Address
+          %th Name
+          %th Telephone
+          %th Postal Code
+        - @needs_to_be_blanked.each do |not_blank|
+          %tr
+            %td= not_blank[:address]
+            %td= not_blank[:remove_name]
+            %td= not_blank[:remove_telephone]
+            %td= not_blank[:remove_postal_code]
+
+  -if @wrong_languages.length > 0
+    .box
+      %h4.title.is-4 Wrong Language. Fix Language or Status:
+      %table.table.is-bordered.is-striped.is-hoverable
+        - @wrong_languages.each do |text|
+          %tr
+            %td= text
+
+-if @needs_auto_fixes
+  -if @bad_address_format.length > 0
+    -if @can_auto_fix
       %h3.title.is-3 Automatic Fixes
       %h5.subtitle.is-65The Addresses below will be automatically fixed in the downloaded file. Please review before downloading and let us know if any issues.
-
-      .box
-        %table.table.is-bordered.is-striped.is-hoverable
+    .box
+      -unless @can_auto_fix
+        %h4.title.is-4 Wrong Address Format. Please fix:
+      %table.table.is-bordered.is-striped.is-hoverable
+        %tr
+          %th Original
+          %th Fixed
+        - @bad_address_format.each do |bad|
           %tr
-            %th Original
-            %th Fixed
-          - @bad_address_format.each do |bad|
-            %tr
-              %td= bad[:original]
-              %td= bad[:sanitized]
-- else
-  %p Woops! Looks like you forgot to paste in your addresses!
+            %td= bad[:original]
+            %td= bad[:sanitized]

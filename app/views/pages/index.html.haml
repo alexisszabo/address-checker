@@ -15,6 +15,15 @@
           .control.select
             = select_tag :province, options_for_select(['British Columbia'])
         .field
+          .label Kind
+          .control
+            .is-inline
+              = radio_button_tag 'kind', 'Local', true, {'data-action':"change->address-checker#kindIsLocal"}
+              = label_tag 'Local', 'Local'
+            .is-inline
+              = radio_button_tag 'kind', 'Foreign-language', false, {'data-action':"change->address-checker#kindIsForeignLanguage"}
+              = label_tag 'Foreign-language', 'Foreign-language'
+        .field.foreign-language-only{style: 'display:none'}
           .label Statuses to Check
           .control
             - statuses_default_on = ['New', 'Valid', 'Do not call']
