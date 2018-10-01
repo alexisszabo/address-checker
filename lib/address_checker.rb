@@ -5,7 +5,6 @@ include Amatch
 module AddressChecker
   def check_addresses(addresses, kind, country, province, valid_languages, statuses)
     ##### Load all the street names for cities for this country province
-
     street_name_in_city = {}
     full_street_name_in_city = {}
     ambiguous_names = {}
@@ -78,8 +77,8 @@ module AddressChecker
           needs_to_be_blanked << hash
         end
 
-        wrong_languages << "#{address}: #{row['Language']}" if (valid_languages.length > 1 && !(valid_languages.include? row['Language']))
 
+        wrong_languages << "#{address}: #{row['Language']}" unless valid_languages.include? row['Language']
         duplicate_addresses << address if all_database_addresses[address]
       end
       all_database_addresses[address] = true

@@ -3,9 +3,8 @@ include AddressChecker
 
 class AddressCheckerController < ApplicationController
   def check
-    params[:valid_languages] = [] #Hack
-
     @messages = []
+    @messages << 'Please select the primary language of your account' unless params[:valid_languages]
 
     if params[:addresses].present?
       headers = params[:addresses].lines.first
@@ -25,10 +24,11 @@ class AddressCheckerController < ApplicationController
 
     if @messages.blank?
       addresses = []
-      @can_auto_fix = (params[:kind] == 'Foreign-language')
+
       CSV.parse(params[:addresses], headers: true, col_sep: "\t", quote_char: '|') { |row| addresses << row }
       result = check_addresses(addresses, params[:kind], params[:country], params[:province], params[:valid_languages], params[:statuses])
 
+      @can_auto_fix = (params[:kind] == 'Foreign-language')
       @duplicate_addresses = result[:duplicate_addresses]
       @unknown_street_name = result[:unknown_street_name]
       @unknown_cities      = result[:unknown_cities]

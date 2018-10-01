@@ -34,6 +34,10 @@
               .is-inline
                 = check_box_tag 'statuses[]', status, false
                 = label_tag status, status
+        .field
+          .label Primary Language(s)
+          .control.select
+            = select_tag :valid_languages, options_for_select(@languages), multiple: true, id: 'language-select'
         =button_tag 'Check Addresses', class: 'button is-link', 'data-target':'address-checker.submit'
   .section{style: 'padding-top: 0.75em; padding-bottom: 1.5em'}
     #results{'data-target': 'address-checker.results'}
