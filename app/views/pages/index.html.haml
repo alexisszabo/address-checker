@@ -15,14 +15,19 @@
           .control.select
             = select_tag :province, options_for_select(@provinces)
         .field
+          .label Primary Language(s)
+          .control.select
+            = select_tag :valid_languages, options_for_select(@languages), multiple: true, id: 'language-select'
+        .field
           .label Kind
           .control
             .is-inline
-              = radio_button_tag 'kind', 'Local', true, {'data-action':"change->address-checker#kindIsLocal"}
+              = radio_button_tag 'kind', 'Local', true, {'data-action':"change->address-checker#kindIsLocal", 'data-target':'address-checker.kindLocal'}
               = label_tag 'Local', 'Local'
             .is-inline
-              = radio_button_tag 'kind', 'Foreign-language', false, {'data-action':"change->address-checker#kindIsForeignLanguage"}
+              = radio_button_tag 'kind', 'Foreign-language', false, {'data-action':"change->address-checker#kindIsForeignLanguage", 'data-target':'address-checker.kindForeignLanguage'}
               = label_tag 'Foreign-language', 'Foreign-language'
+
         .field.foreign-language-only{style: 'display:none'}
           .label Statuses to Check
           .control
@@ -34,11 +39,6 @@
               .is-inline
                 = check_box_tag 'statuses[]', status, false
                 = label_tag status, status
-        .field
-          .label Primary Language(s)
-          .control.select
-            = select_tag :valid_languages, options_for_select(@languages), multiple: true, id: 'language-select'
         =button_tag 'Check Addresses', class: 'button is-link', 'data-target':'address-checker.submit'
   .section{style: 'padding-top: 0.75em; padding-bottom: 1.5em'}
     #results{'data-target': 'address-checker.results'}
-    //%button.button{type: 'button'} Download CSV

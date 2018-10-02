@@ -1,6 +1,6 @@
 - if @needs_manual_fixes
   %h3.title.is-3 Manual Fixes Needed
-  %h5.subtitle.is-5 Please manually fix up the following before downloading the fixed list of addresses for import
+  %h5.subtitle.is-5 Please manually fix up the following:
   .is-divider
 
   - if @duplicate_addresses.length > 0
@@ -86,3 +86,20 @@
           %tr
             %td= bad[:original]
             %td= bad[:sanitized]
+.box
+  =form_with url: '/address_checker/download_csv' do |form|
+    .field.foreign-language-only{style: 'display:none'}
+      .label Purpose
+      .control
+        =radio_button_tag 'purpose', 'Import', true,  {'data-action':"change->address-checker#purposeIsImport", 'data-target':'address-checker.purposeImport'}
+        =label_tag 'Import', 'I want to import corrected addresses back into my account'
+      .control
+        =radio_button_tag 'purpose', 'Export', false, {'data-action':"change->address-checker#purposeIsExport", 'data-target':'address-checker.purposeExport'}
+        =label_tag 'Export', 'I want to export addresses into a different account'
+    .field.export-only
+      .label
+        Export Tag
+        %p If you wish to export only addresses from selected territories enter a text tag that matches one in the territory description. (ie. EXPORT_EAST). Otherwise leave blank to export all.
+      .control
+        =text_field_tag 'export_tag', '', class: 'input'
+    =button_tag 'Download CSV File', class: 'button is-link', 'data-target':'address-checker.submit_download'
