@@ -885,11 +885,11 @@ Margate Place
 Marine Drive
 Martin Drive
 Mary Drive
-Mcbeth Road
-Mcbride Avenue
-Mcbride Drive
-Mckenzie Avenue
-Mcmillan Road
+McBeth Road
+McBride Avenue
+McBride Drive
+McKenzie Avenue
+McMillan Road
 Melrose Drive
 Melville Place
 Michel Place
@@ -910,7 +910,7 @@ Morioka Place
 Mountain View Drive
 Musqueam Drive
 Nairn Place
-New Mclellan Road
+New McLellan Road
 Newark Place
 Nico Wynd Drive
 Nico Wynd Place
@@ -941,7 +941,7 @@ Ocean Surf Place
 Ocean Tide Court
 Ocean Wind Drive
 Ohara Lane
-Old Mclellan Road
+Old McLellan Road
 Old Yale Road
 Old Yale Road East
 Olsen Road

@@ -438,9 +438,9 @@ Gordon Way
 Gormond Road
 Gower Street
 Grandy Road
-Grant Mcconachie Offramp Way
-Grant Mcconachie Onramp Way
-Grant Mcconachie Way
+Grant McConachie Offramp Way
+Grant McConachie Onramp Way
+Grant McConachie Way
 Granville Avenue
 Granville Crescent
 Grauer Road
@@ -628,30 +628,30 @@ Maycrest Way
 Mayfair Lakes Golf Course Access
 Mayfield Place
 Mayflower Drive
-Mcburney Court
-Mcburney Drive
-Mccallan Road
-Mccartney Way
-Mcclinton Avenue
-Mccoll Crescent
-Mccutcheon Place
-Mcdonald Road
-Mckay Drive
-Mckay Place
-Mckenzie Road
-Mckessock Avenue
-Mckessock Place
-Mckim Way
-Mclean Avenue
-Mclennan Avenue
-Mclennan Place
-Mcleod Avenue
-Mcleod Court
-Mclure Avenue
-Mcmath Road
-Mcmillan Way
-Mcneely Drive
-Mcrae Street
+McBurney Court
+McBurney Drive
+McCallan Road
+McCartney Way
+McClinton Avenue
+McColl Crescent
+McCutcheon Place
+McDonald Road
+McKay Drive
+McKay Place
+McKenzie Road
+McKessock Avenue
+McKessock Place
+McKim Way
+McLean Avenue
+McLennan Avenue
+McLennan Place
+McLeod Avenue
+McLeod Court
+McLure Avenue
+McMath Road
+McMillan Way
+McNeely Drive
+McRae Street
 Mellis Drive
 Merchantman Place
 Merganser Drive
@@ -920,7 +920,7 @@ Sorenson Crescent
 Sorenson Gate
 Sorrel Drive
 South Arm Place
-South Mcdonald Road
+South McDonald Road
 Southdale Road
 Southgate Place
 Southgate Road
