@@ -15,10 +15,6 @@
           .control.select
             = select_tag :province, options_for_select(@provinces)
         .field
-          .label Primary Language(s)
-          .control.select
-            = select_tag :valid_languages, options_for_select(@languages), multiple: true, id: 'language-select'
-        .field
           .label Kind
           .control
             .is-inline
@@ -27,8 +23,11 @@
             .is-inline
               = radio_button_tag 'kind', 'Foreign-language', false, {'data-action':"change->address-checker#kindIsForeignLanguage", 'data-target':'address-checker.kindForeignLanguage'}
               = label_tag 'Foreign-language', 'Foreign-language'
-
         .field.foreign-language-only{style: 'display:none'}
+          .field
+            .label Primary Language(s)
+            .control.select
+              = select_tag :valid_languages, options_for_select(@languages), multiple: true, id: 'language-select'
           .label Statuses to Check
           .control
             - @statuses_default_on.each do |status|

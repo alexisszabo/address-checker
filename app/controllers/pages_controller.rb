@@ -3,7 +3,6 @@ class PagesController < ApplicationController
     @countries = ['Canada']
     @provinces = ['British Columbia']
     @languages = %w(
-      English
       American\ Sign\ Language\ (ASL)
       Amharic
       Arabic

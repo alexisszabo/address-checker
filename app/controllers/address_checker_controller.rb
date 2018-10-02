@@ -4,7 +4,7 @@ include AddressChecker
 class AddressCheckerController < ApplicationController
   def check
     @messages = []
-    @messages << 'Please select the primary language of your account' unless params[:valid_languages]
+    @messages << 'Please select the primary language of your account' if params[:kind] != 'Local' && !params[:valid_languages]
 
     if params[:addresses].present?
       headers = params[:addresses].lines.first
