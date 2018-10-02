@@ -82,9 +82,9 @@
             - @needs_to_be_blanked.each do |not_blank|
               %tr
                 %td= not_blank[:address]
-                %td= not_blank[:remove_name]
-                %td= not_blank[:remove_telephone]
-                %td= not_blank[:remove_postal_code]
+                %td= not_blank[:name]
+                %td= not_blank[:telephone]
+                %td= not_blank[:postal_code]
 .box
   =form_with url: '/address_checker/download_csv' do |form|
     .field.foreign-language-only{style: 'display:none'}

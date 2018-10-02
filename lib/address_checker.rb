@@ -71,9 +71,9 @@ module AddressChecker
 
         if row['Name'] || row['Telephone'] || row['Postal_code']
           hash = {address: address}
-          hash[:remove_name] = row['Name'] if row['Name']
-          hash[:remove_telephone] = row['Telephone'] if row['Telephone']
-          hash[:remove_postal_code] = row['Postal_code'] if row['Postal_code']
+          hash[:name] = row['Name'] if row['Name']
+          hash[:telephone] = row['Telephone'] if row['Telephone']
+          hash[:postal_code] = row['Postal_code'] if row['Postal_code']
           needs_to_be_blanked << hash
         end
 
@@ -133,7 +133,8 @@ module AddressChecker
 
   def sanitize_address(address)
     ##### Remove any Periods
-    address = address.gsub('.', '')
+    address = address.delete('.')
+    ##### Remove Trailing Space
     address = address.chomp(' ')
 
     ##### Capitalize the first letter of any words that don't being with a number
