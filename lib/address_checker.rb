@@ -77,8 +77,9 @@ module AddressChecker
           needs_to_be_blanked << hash
         end
 
-
-        wrong_languages << "#{address}: #{row['Language']}" unless valid_languages.include? row['Language']
+        if kind != 'Local'
+          wrong_languages << "#{address}: #{row['Language']}" unless valid_languages.include? row['Language']
+        end
         duplicate_addresses << address if all_database_addresses[address]
       end
       all_database_addresses[address] = true
@@ -114,7 +115,7 @@ module AddressChecker
       {starts_with: %w(Boulevard),     replace_with: 'Blvd'},
       {starts_with: %w(Centre Center), replace_with: 'Ctr'},
       {starts_with: %w(Cl),            replace_with: 'Close'},
-      {starts_with: %w(Cres),          replace_with: 'Cres'},
+      {starts_with: %w(Cr[^t]),        replace_with: 'Cres'},
       {starts_with: %w(Court Ct),      replace_with: 'Crt'},
       {starts_with: %w(Dr),            replace_with: 'Dr'},
       {starts_with: %w(Lane),          replace_with: 'Ln'},
@@ -122,6 +123,7 @@ module AddressChecker
       {starts_with: %w(Road),          replace_with: 'Rd'},
       {starts_with: %w(Square),        replace_with: 'Sq'},
       {starts_with: %w(St),            replace_with: 'St'},
+      {starts_with: %w(Wy),            replace_with: 'Way'}
     ]
 
   def format_address(suite, address)
@@ -136,11 +138,22 @@ module AddressChecker
     ##### Capitalize the first letter of any words that don't being with a number
     address = address.gsub(/\S+/) { |word| /^[0-9]/.match(word) ? word : word[0].capitalize + word[1..-1] }
 
+    ##### Replace East/West/North/South with Single letter
+    address = address.gsub(/(^|\s+)East($|\s+)/i, '\1E\2')
+    address = address.gsub(/(^|\s+)West($|\s+)/i, '\1W\2')
+    address = address.gsub(/(^|\s+)North($|\s+)/i, '\1N\2')
+    address = address.gsub(/(^|\s+)South($|\s+)/i, '\1S\2')
+    address = address.gsub(/(^|\s+)Northeast($|\s+)/i, '\1NE\2')
+    address = address.gsub(/(^|\s+)Northwest($|\s+)/i, '\1NW\2')
+    address = address.gsub(/(^|\s+)Southeast($|\s+)/i, '\1SE\2')
+    address = address.gsub(/(^|\s+)Southwest($|\s+)/i, '\1SW\2')
+
+
     ##### If street name has a direction at the end, put it in front of the street name (Vancouver)
     ##### ie. 1234 49th Ave East -> 1234 E 49th Ave
-    if (match = address.match(/(^[0-9]+)\s+([0-9]+)(st|nd|rd|th)\s+(\w+)\s+(East|West|North|South)/))
-      number, street1, street2, street3, direction = match.captures
-      address = "#{number} #{direction[0].capitalize} #{street1}#{street2} #{street3}"
+    if (match = address.match(/(^[0-9]+)\s+([0-9]+)(st|nd|rd|th)\s+(\w+)\s+(E|W|N|S)(\s)(.*)/))
+      number, street1, street2, street3, direction, rest1, rest2 = match.captures
+      address = "#{number} #{direction[0].capitalize} #{street1}#{street2} #{street3}#{rest1}#{rest2}"
     end
 
     ##### If street has a single letter, capitalize it (Surrey, Maple Ridge)
@@ -163,7 +176,7 @@ module AddressChecker
   ##### This replaces the street name (assumed to be the last word in the address)
   ##### With the preferred abbreviation
   def replace_street_name(address, search, replace)
-    address.gsub(Regexp.new('(\s+)'+search+'\S*$', Regexp::IGNORECASE), '\\1'+replace)
+    address.gsub(Regexp.new('(\s+)'+search+'\S*($|\s(N|W|S|E)$)', Regexp::IGNORECASE), '\\1'+replace+'\\2')
   end
 
   def sanitize_suite(suite)
