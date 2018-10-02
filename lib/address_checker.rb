@@ -136,6 +136,8 @@ module AddressChecker
     address = address.delete('.')
     ##### Remove Trailing Space
     address = address.chomp(' ')
+    ##### Remove Double Space
+    address = address.gsub(/\s\s/, ' ')
 
     ##### Capitalize the first letter of any words that don't being with a number
     address = address.gsub(/\S+/) { |word| /^[0-9]/.match(word) ? word : word[0].capitalize + word[1..-1] }
