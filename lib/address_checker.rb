@@ -118,6 +118,7 @@ module AddressChecker
       {starts_with: %w(Cr[^t]),        replace_with: 'Cres'},
       {starts_with: %w(Court Ct),      replace_with: 'Crt'},
       {starts_with: %w(Dr),            replace_with: 'Dr'},
+      {starts_with: %w(Highway),       replace_with: 'Hwy'},
       {starts_with: %w(Lane),          replace_with: 'Ln'},
       {starts_with: %w(Place),         replace_with: 'Pl'},
       {starts_with: %w(Road),          replace_with: 'Rd'},
@@ -131,8 +132,8 @@ module AddressChecker
   end
 
   def sanitize_address(address)
-    ##### Remove any Trailing Periods or whitespace
-    address = address.chomp('.')
+    ##### Remove any Periods
+    address = address.gsub('.', '')
     address = address.chomp(' ')
 
     ##### Capitalize the first letter of any words that don't being with a number
