@@ -41,6 +41,9 @@ class AddressCheckerController < ApplicationController
       @needs_auto_fixes    = @bad_address_format.length > 1
 
       @has_problems        = (@needs_manual_fixes || @needs_auto_fixes)
+
+      @remove_options = %w(Name Telephone Postal_Code Notes Notes_private)
+
       render partial: 'result'
     else
       render partial: 'wrong_input'

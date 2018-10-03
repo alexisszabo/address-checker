@@ -86,6 +86,7 @@
                 %td= not_blank[:telephone]
                 %td= not_blank[:postal_code]
 .box
+  %h4.title.is-4 Create CSV
   =form_with url: '/address_checker/download_csv' do |form|
     .field.foreign-language-only{style: 'display:none'}
       .label Purpose
@@ -96,9 +97,18 @@
         =radio_button_tag 'purpose', 'Export', false, {'data-action':"change->address-checker#purposeIsExport", 'data-target':'address-checker.purposeExport'}
         =label_tag 'Export', 'I want to export addresses into a different account'
     .field.export-only
-      .label
-        Export Tag
-        %p If you wish to export only addresses from selected territories enter a text tag that matches one in the territory description. (ie. EXPORT_EAST). Otherwise leave blank to export all.
+      .label Export Tag
+      If you wish to export only addresses from selected territories enter a text tag that matches one in the territory description. (ie. EXPORT_EAST). Otherwise leave blank to export all.
       .control
         =text_field_tag 'export_tag', '', class: 'input'
+    .field
+      .label Options
+      .options
+        .control
+          = check_box_tag 'autofix', 'autofix', true
+          = label_tag 'autofix', 'Autofix Addresss'
+        - @remove_options.each do |remove|
+          .control
+            = check_box_tag 'remove[]', remove, false
+            = label_tag remove, 'Remove '+remove
     =button_tag 'Download CSV File', class: 'button is-link', 'data-target':'address-checker.submit_download'
