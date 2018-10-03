@@ -1,7 +1,7 @@
 import {Controller} from 'stimulus';
 
 export default class extends Controller {
-  static targets = ["results", "submit", "kindForeignLanguage", "kindLocal", "purposeImport", "purposeExport"];
+  static targets = ["results", "submit", "kindForeignLanguage", "kindLocal", "modeCreateCSV", "modeCheck", "purposeImport", "purposeExport"];
 
   beforeSendResults () {
     this.submitTarget.classList.add('is-loading');
@@ -19,37 +19,35 @@ export default class extends Controller {
   displayResults (event) {
     let [data, status, xhr]  = event.detail;
     this.resultsTarget.innerHTML = xhr.response;
-    if (this.kindForeignLanguageTarget.checked) { this.kindIsForeignLanguage(); }
-    if (this.kindLocalTarget.checked)   { this.kindIsLocal(); }
-    // The following may not exist, depending on the ajax return
-    try {
-      if (this.purposeImportTarget.checked) { this.purposeIsImport(); }
-      if (this.purposeExportTarget.checked) { this.purposeIsExport(); }
-    } catch(err) {}
+    this.updateUI();
   }
 
-  kindIsLocal (event) {
-    this.hideElements(document.getElementsByClassName('foreign-language-only'));
-    this.showElements(document.getElementsByClassName('local-only'));
+  updateUI (event) {
+    if (this.kindLocalTarget.checked) {
+      this.showAndHide('local-only', 'foreignLanguageOnly');
+    } else {
+      this.showAndHide('foreign-language-only', 'local-only');
+      if (this.modeCreateCSVTarget.checked) {
+        this.showAndHide('create-csv-only', 'check-only');
+        if (this.purposeExportTarget.checked) {
+          this.showAndHide('export-only', 'import-only');
+        } else {
+          this.showAndHide('import-only', 'export-only');
+        }
+        this.submitTarget.innerText = 'Download CSV';
+      } else {
+        this.showAndHide('check-only', 'create-csv-only');
+        this.submitTarget.innerText = 'Check Addresses';
+      }
+    }
   }
 
-  kindIsForeignLanguage (event) {
-    this.hideElements(document.getElementsByClassName('local-only'));
-    this.showElements(document.getElementsByClassName('foreign-language-only'));
-  }
-
-  purposeIsImport (event) {
-    this.hideElements(document.getElementsByClassName('export-only'));
-    this.showElements(document.getElementsByClassName('import-only'));
-  }
-
-  purposeIsExport (event) {
-    this.hideElements(document.getElementsByClassName('import-only'));
-    this.showElements(document.getElementsByClassName('export-only'));
+  showAndHide(showClass, hideClass) {
+    this.showElements(document.getElementsByClassName(showClass));
+    this.hideElements(document.getElementsByClassName(hideClass));
   }
 
   //Internal Routines
-
   hideElements (elements) {
     for (let element of elements) {
       element.style.display = 'none'

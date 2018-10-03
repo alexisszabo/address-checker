@@ -18,17 +18,27 @@
           .label Kind
           .control
             .is-inline
-              = radio_button_tag 'kind', 'Local', true, {'data-action':"change->address-checker#kindIsLocal", 'data-target':'address-checker.kindLocal'}
+              = radio_button_tag 'kind', 'Local', true, {'data-action':"change->address-checker#updateUI", 'data-target':'address-checker.kindLocal'}
               = label_tag 'Local', 'Local'
             .is-inline
-              = radio_button_tag 'kind', 'Foreign-language', false, {'data-action':"change->address-checker#kindIsForeignLanguage", 'data-target':'address-checker.kindForeignLanguage'}
+              = radio_button_tag 'kind', 'Foreign-language', false, {'data-action':"change->address-checker#updateUI", 'data-target':'address-checker.kindForeignLanguage'}
               = label_tag 'Foreign-language', 'Foreign-language'
         .field.foreign-language-only{style: 'display:none'}
+          .label Mode
+          .control
+            .is-inline
+              = radio_button_tag 'mode', 'Check Addresss', true, {'data-action':"change->address-checker#updateUI", 'data-target':'address-checker.modeCheck'}
+              = label_tag 'Check Addresses', 'Check Addresses'
+            .is-inline
+              = radio_button_tag 'mode', 'Create CSV', false, {'data-action':"change->address-checker#updateUI", 'data-target':'address-checker.modeCreateCSV'}
+              = label_tag 'Create CSV', 'Create CSV'
+        .field.foreign-language-only.check-only{style: 'display:none'}
           .field
             .label Primary Language(s)
             .control.select
               = select_tag :valid_languages, options_for_select(@languages), multiple: true, id: 'language-select'
-          .label Statuses to Check
+        .field.foreign-language-only{style: 'display:none'}
+          .label Statuses
           .control
             - @statuses_default_on.each do |status|
               .is-inline
@@ -38,6 +48,29 @@
               .is-inline
                 = check_box_tag 'statuses[]', status, false
                 = label_tag status, status
+        .field.foreign-language-only.create-csv-only{style: 'display:none'}
+          .label Purpose
+          .control
+            =radio_button_tag 'purpose', 'Import', true,  {'data-action':"change->address-checker#updateUI", 'data-target':'address-checker.purposeImport'}
+            =label_tag 'Import', 'I want to import corrected addresses back into my account'
+          .control
+            =radio_button_tag 'purpose', 'Export', false, {'data-action':"change->address-checker#updateUI", 'data-target':'address-checker.purposeExport'}
+            =label_tag 'Export', 'I want to export addresses into a different account'
+        .field.foreign-language-only.create-csv-only.export-only{style: 'display:none'}
+          .label Export Tag
+          If you wish to export only addresses from selected territories enter a text tag that matches one in the territory description. (ie. EXPORT_EAST). Otherwise leave blank to export all.
+          .control
+            =text_field_tag 'export_tag', '', class: 'input'
+        .field.foreign-language-only.create-csv-only.export-only{style: 'display:none'}
+          .label Options
+          .options
+            .control
+              = check_box_tag 'autofix', 'autofix', true
+              = label_tag 'autofix', 'Autofix Addresss'
+            - @remove_options.each do |remove|
+              .control
+                = check_box_tag 'remove[]', remove, false
+                = label_tag remove, 'Remove '+remove
         =button_tag 'Check Addresses', class: 'button is-link', 'data-target':'address-checker.submit'
   .section{style: 'padding-top: 0.75em; padding-bottom: 1.5em'}
     #results{'data-target': 'address-checker.results'}
