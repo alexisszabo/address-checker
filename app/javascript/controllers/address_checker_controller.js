@@ -24,7 +24,7 @@ export default class extends Controller {
 
   updateUI (event) {
     if (this.kindLocalTarget.checked) {
-      this.showAndHide('local-only', 'foreignLanguageOnly');
+      this.showAndHide('local-only', 'foreign-language-only');
     } else {
       this.showAndHide('foreign-language-only', 'local-only');
       if (this.modeCreateCSVTarget.checked) {
