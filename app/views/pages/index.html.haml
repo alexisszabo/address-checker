@@ -1,7 +1,7 @@
 %div{'data-controller': 'address-checker'}
   .section{style:'padding-top: 1.5em; padding-bottom-0.75em'}
     .box
-      =form_with url: '/address_checker/check', html: { data: { type: "html", action: "ajax:success->address-checker#displayResults ajax:complete->address-checker#completeResults ajax:beforeSend->address-checker#beforeSendResults ajax:error->address-checker#errorResults"}} do |form|
+      =form_with url: '/address_checker/process_addresses', html: { data: { type: "html", action: "ajax:success->address-checker#displayResults ajax:complete->address-checker#completeResults ajax:beforeSend->address-checker#beforeSendResults ajax:error->address-checker#errorResults"}} do |form|
         .field
           .label Paste Exported Addresses Here
           .control
@@ -27,7 +27,7 @@
           .label Mode
           .control
             .is-inline
-              = radio_button_tag 'mode', 'Check Addresss', true, {'data-action':"change->address-checker#updateUI", 'data-target':'address-checker.modeCheck'}
+              = radio_button_tag 'mode', 'Check Addresses', true, {'data-action':"change->address-checker#updateUI", 'data-target':'address-checker.modeCheck'}
               = label_tag 'Check Addresses', 'Check Addresses'
             .is-inline
               = radio_button_tag 'mode', 'Create CSV', false, {'data-action':"change->address-checker#updateUI", 'data-target':'address-checker.modeCreateCSV'}

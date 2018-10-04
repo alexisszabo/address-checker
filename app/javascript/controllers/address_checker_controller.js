@@ -1,4 +1,5 @@
 import {Controller} from 'stimulus';
+import saveAs from 'file-saver';
 
 export default class extends Controller {
   static targets = ["results", "submit", "kindForeignLanguage", "kindLocal", "modeCreateCSV", "modeCheck", "purposeImport", "purposeExport"];
@@ -18,8 +19,15 @@ export default class extends Controller {
 
   displayResults (event) {
     let [data, status, xhr]  = event.detail;
-    this.resultsTarget.innerHTML = xhr.response;
-    this.updateUI();
+    let json = JSON.parse(xhr.response);
+    if (json["html"]) {
+      // "Check Addresses" Mode
+      this.resultsTarget.innerHTML = json["html"];
+    } else {
+      // "Create CSV" Mode
+      var blob = new Blob([json["csv_string"]], {type: "text/plain;charset=utf-8"});
+      saveAs(blob, "fixed_addresses.csv");
+    }
   }
 
   updateUI (event) {

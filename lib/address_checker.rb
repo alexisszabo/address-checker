@@ -97,11 +97,41 @@ module AddressChecker
 
   end
 
-  def fix_addresses(address_hash)
-    address_hash.each do |id,a|
-      a['Address'] = sanitize_address(a)
+  def fix_addresses(address_rows, purpose, export_tag, fix_address, remove_options)
+    new_address_rows = []
+    address_rows.each do |row|
+      ##### If an export tag is defined, we only export addresses that match the tag in the territory description
+      next if export_tag && row['Territory_description'] && !row['Territory_description'].match(/(^|\s)#{export_tag}($|\s)/)
+
+      row['Address'] = sanitize_address(row['Address']) if fix_address
+
+      ##### Clear any specified fields
+      remove_options.each { |key| row[key] == '' } if remove_options
+
+      ##### If we're export addresses to another account, delete the keys associated with existing addresses/territories
+      ##### We only need to clear the ones that will get exported later
+      if purpose == 'Export'
+        row['Address_ID'] = ''
+        row['Territory_ID'] = ''
+      end
+
+      new_address_rows << row
     end
-    address_hash
+    new_address_rows
+  end
+
+  def convert_addresses_to_csv_string(addresses)
+    fields = %w[Address_ID Territory_ID Language Status Name Suite Address City Province Postal_code Country Latitude Longitude Telephone Notes Notes_private]
+    CSV.generate do |csv|
+      csv << fields
+      addresses.each do |address|
+        address_array = []
+        fields.each do |field|
+          address_array << address[field]
+        end
+        csv << address_array
+      end
+    end
   end
 
   private
