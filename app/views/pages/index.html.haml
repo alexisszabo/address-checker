@@ -37,7 +37,7 @@
             .label Primary Language(s)
             .control.select
               = select_tag :valid_languages, options_for_select(@languages), multiple: true, id: 'language-select'
-        .field.foreign-language-only{style: 'display:none'}
+        .field.foreign-language-only.check-only{style: 'display:none'}
           .label Statuses
           .control
             - @statuses_default_on.each do |status|
@@ -61,7 +61,7 @@
           If you wish to export only addresses from selected territories enter a text tag that matches one in the territory description. (ie. EXPORT_EAST). Otherwise leave blank to export all.
           .control
             =text_field_tag 'export_tag', '', class: 'input'
-        .field.foreign-language-only.create-csv-only.export-only{style: 'display:none'}
+        .field.foreign-language-only.create-csv-only{style: 'display:none'}
           .label Options
           .options
             .control
