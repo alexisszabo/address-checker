@@ -1,4 +1,4 @@
-import Choices from 'choices.js';
+//= require choices.js/assets/scripts/dist/choices
 
 // Place all the behaviors and hooks related to the matching controller here.
 document.addEventListener('turbolinks:load', function () {
