@@ -101,7 +101,7 @@ module AddressChecker
     new_address_rows = []
     address_rows.each do |row|
       ##### If an export tag is defined, we only export addresses that match the tag in the territory description
-      next if export_tag && row['Territory_description'] && !row['Territory_description'].match(/(^|\s)#{export_tag}($|\s)/)
+      next if export_tag.present? && !row['Territory_description'].try(:match, /(^|\s+)#{export_tag}($|\s+)/)
 
       row['Address'] = sanitize_address(row['Address']) if fix_address
 
