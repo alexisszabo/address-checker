@@ -2,7 +2,7 @@ import {Controller} from 'stimulus';
 import saveAs from 'file-saver';
 
 export default class extends Controller {
-  static targets = ["results", "submit", "kindForeignLanguage", "kindLocal", "modeCreateCSV", "modeCheck", "purposeImport", "purposeExport"];
+  static targets = ["results", "submit", "kindForeignLanguage", "kindLocal", "modeCreateCSV", "modeCheck", "purposeImport", "purposeExport", "exportTag"];
 
   beforeSendResults () {
     this.submitTarget.classList.add('is-loading');
@@ -18,15 +18,16 @@ export default class extends Controller {
   }
 
   displayResults (event) {
-    let [data, status, xhr]  = event.detail;
-    let json = JSON.parse(xhr.response);
+    const [data, status, xhr]  = event.detail;
+    const json = JSON.parse(xhr.response);
     if (json["html"]) {
       // "Check Addresses" Mode
       this.resultsTarget.innerHTML = json["html"];
     } else {
       // "Create CSV" Mode
-      var blob = new Blob([json["csv_string"]], {type: "text/plain;charset=utf-8"});
-      saveAs(blob, "fixed_addresses.csv");
+      const blob = new Blob([json["csv_string"]], {type: "text/plain;charset=utf-8"});
+      const filename = 'addresses_to_' + (this.purposeExportTarget.checked ? 'export' + (this.exportTagTarget.value != '' ? '_tagged_' + this.exportTagTarget.value : '') : 'import') + '.csv';
+      saveAs(blob, filename);
     }
   }
 

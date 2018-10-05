@@ -60,7 +60,7 @@
           .label Export Tag
           If you wish to export only addresses from selected territories enter a text tag that matches one in the territory description. (ie. EXPORT_EAST). Otherwise leave blank to export all.
           .control
-            =text_field_tag 'export_tag', '', class: 'input'
+            =text_field_tag 'export_tag', '', class: 'input', 'data-target':'address-checker.exportTag'
         .field.foreign-language-only.create-csv-only{style: 'display:none'}
           .label Options
           .options
