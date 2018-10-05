@@ -13,3 +13,5 @@
 //= require rails-ujs
 //= require turbolinks
 //= require_tree .
+//= require file-saver/dist/FileSaver
+//= require choices.js/assets/scripts/dist/choices
