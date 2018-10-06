@@ -54,7 +54,7 @@ class AddressCheckerController < ApplicationController
     @needs_to_be_blanked = result[:needs_to_be_blanked]
     @needs_manual_fixes  = [@duplicate_addresses, @unknown_street_name, @unknown_cities, @wrong_languages, @wrong_cities, @needs_to_be_blanked].any? { |a| a.length > 1 }
     @bad_address_format  = result[:bad_address_format]
-    @needs_auto_fixes    = @bad_address_format.length > 1
+    @needs_auto_fixes    = @bad_address_format.length > 0
     @has_problems        = (@needs_manual_fixes || @needs_auto_fixes)
 
     render_to_string partial: 'result'
