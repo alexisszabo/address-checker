@@ -30,6 +30,6 @@ class PagesController < ApplicationController
     )
     @statuses_default_on = ['New', 'Valid', 'Do not call']
     @statuses_default_off = ['Moved', 'Duplicate', 'Not valid']
-    @remove_options = %w[Name Telephone Postal_Code Notes Notes_private]
+    @remove_options = %w[Name Telephone Postal_code Notes Notes_private]
   end
 end
