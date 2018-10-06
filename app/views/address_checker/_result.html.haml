@@ -57,7 +57,7 @@
   -if @bad_address_format.length > 0
     -if @can_auto_fix
       %h3.title.is-3 Automatic Fixes
-      %h5.subtitle.is-65The Addresses below can be automatically fixed in the downloaded file. Please review before downloading and let us know if any issues.
+      %h5.subtitle.is-6 The Addresses below can be automatically fixed in the downloaded file. Please review before downloading and let us know if any issues.
     .box
       -unless @can_auto_fix
         %h4.title.is-4 Wrong Address Format. Please fix:
@@ -65,10 +65,12 @@
         %tr
           %th Original
           %th Fixed
+          %th Reason
         - @bad_address_format.each do |bad|
           %tr
             %td= bad[:original]
             %td= bad[:sanitized]
+            %td= bad[:reason]
       -if @needs_to_be_blanked.length > 0
         .box
           %h4.title.is-4 Remove Details:

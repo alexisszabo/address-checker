@@ -40,13 +40,13 @@ module AddressChecker
     addresses.each do |row|
       next unless row['Address']
       next if kind == 'Local' && row['Kind'] != 'Local'
-      address_without_suite = sanitize_address(row['Address'])
+      address_without_suite, reason = sanitize_address(row['Address'], true)
       street_name = address_without_suite.split(/\s/).drop(1).join(' ')
       original_address = format_address(row['Suite'], row['Address'])
       address = format_address(sanitize_suite(row['Suite']), address_without_suite)
 
       if kind == 'Local' || statuses.include?(row['Status'])
-        bad_address_format << {original: original_address, sanitized: address} if original_address != address && street_name.split.length >= 2
+        bad_address_format << {original: original_address, sanitized: address, reason: reason} if original_address != address && street_name.split.length >= 2
 
         if street_name_in_city[row['City']]
           unless street_name_in_city[row['City']][street_name]
@@ -172,50 +172,98 @@ module AddressChecker
     suite ? "#{suite}, #{address}" : address
   end
 
-  def sanitize_address(address)
-    ##### Remove any Periods
-    address = address.delete('.')
-    ##### Remove Trailing Space
-    address = address.chomp(' ')
-    ##### Remove Double Space
-    address = address.gsub(/\s\s/, ' ')
+  def sanitize_address(address, include_reason=nil)
+    reason = ''
 
-    ##### Capitalize the first letter of any words that don't being with a number
-    address = address.gsub(/\S+/) { |word| /^[0-9]/.match(word) ? word : word[0].capitalize + word[1..-1] }
-
-    ##### Replace East/West/North/South with Single letter
-    address = address.gsub(/(^|\s+)East($|\s+)/i, '\1E\2')
-    address = address.gsub(/(^|\s+)West($|\s+)/i, '\1W\2')
-    address = address.gsub(/(^|\s+)North($|\s+)/i, '\1N\2')
-    address = address.gsub(/(^|\s+)South($|\s+)/i, '\1S\2')
-    address = address.gsub(/(^|\s+)Northeast($|\s+)/i, '\1NE\2')
-    address = address.gsub(/(^|\s+)Northwest($|\s+)/i, '\1NW\2')
-    address = address.gsub(/(^|\s+)Southeast($|\s+)/i, '\1SE\2')
-    address = address.gsub(/(^|\s+)Southwest($|\s+)/i, '\1SW\2')
-
-
-    ##### If street name has a direction at the end, put it in front of the street name (Vancouver)
-    ##### ie. 1234 49th Ave East -> 1234 E 49th Ave
-    if (match = address.match(/(^[0-9]+)\s+([0-9]+)(st|nd|rd|th)\s+(\w+)\s+(E|W|N|S)(\s)(.*)/))
-      number, street1, street2, street3, direction, rest1, rest2 = match.captures
-      address = "#{number} #{direction[0].capitalize} #{street1}#{street2} #{street3}#{rest1}#{rest2}"
+    address, reason = change_address(address, reason, "Remove Period") do |address|
+      address.delete('.')
     end
 
-    ##### If street has a single letter, capitalize it (Surrey, Maple Ridge)
-    ##### ie. 1234 158a St -> 1234 158A St
-    if (match = address.match(/^([0-9]+)\s+([0-9]+[a-z])\s+(.*)/))
-      number, street1, street2, = match.captures
-      address = "#{number} #{street1.upcase} #{street2}"
+    address, reason = change_address(address, reason, "Remove Extra Space at End") do |address|
+      address.rstrip
+    end 
+
+    address, reason = change_address(address, reason, "Remove Extra Space at Beginning") do |address|
+      address.lstrip
     end
 
-    ##### Use preferred street names
-    @@preferred_street_names.each do |fix|
-      fix[:starts_with].each do |starts_with|
-        address = replace_street_name(address, starts_with, fix[:replace_with])
+    address, reason = change_address(address, reason, "Remove Double Space") do |address|
+      address.gsub(/\s\s/, ' ')
+    end
+
+    address, reason = change_address(address, reason, "Capitalize Street Name") do |address|
+      address.gsub(/\S+/) { |word| /^[0-9]/.match(word) ? word : word[0].capitalize + word[1..-1] }
+    end
+
+    ##### Change directions in addresses unless the direction is the Street Name (ie. 1234 North Rd)
+    if address.split(/\s+/).length > 3
+      address, reason = change_address(address, reason, "Replace East with E") do |address|
+        address.gsub(/(^|\s+)East($|\s+)/i, '\1E\2')
+      end
+      address, reason = change_address(address, reason, "Replace West with W") do |address|
+        address.gsub(/(^|\s+)West($|\s+)/i, '\1W\2')
+      end
+      address, reason = change_address(address, reason, "Replace North with N") do |address|
+        address.gsub(/(^|\s+)North($|\s+)/i, '\1N\2')
+      end
+      address, reason = change_address(address, reason, "Replace South with S") do |address|
+        address.gsub(/(^|\s+)South($|\s+)/i, '\1S\2')
+      end
+      address, reason = change_address(address, reason, "Replace NorthEast with NE") do |address|
+        address.gsub(/(^|\s+)Northeast($|\s+)/i, '\1NE\2')
+      end
+      address, reason = change_address(address, reason, "Replace NorthWest with NW") do |address|
+        address.gsub(/(^|\s+)Northwest($|\s+)/i, '\1NW\2')
+      end
+      address, reason = change_address(address, reason, "Replace SouthEast with SE") do |address|
+        address.gsub(/(^|\s+)Southeast($|\s+)/i, '\1SE\2')
+      end
+      address, reason = change_address(address, reason, "Replace Southwest with SW") do |address|
+        address.gsub(/(^|\s+)Southwest($|\s+)/i, '\1SW\2')
       end
     end
 
-    address
+    ##### If street name has a direction at the end, put it in front of the street name (Vancouver)
+    ##### ie. 1234 49th Ave East -> 1234 E 49th Ave
+    address, reason = change_address(address, reason, "Put N/E/W/S in front of Numbered Street") do |address|
+      if (match = address.match(/(^[0-9]+)\s+([0-9]+)(st|nd|rd|th)\s+(\w+)\s+(E|W|N|S)(\s)(.*)/))
+        number, street1, street2, street3, direction, rest1, rest2 = match.captures
+        "#{number} #{direction[0].capitalize} #{street1}#{street2} #{street3}#{rest1}#{rest2}"
+      else
+        address
+      end
+    end
+
+    ##### If street has a single letter, capitalize it (Surrey, Maple Ridge, etc)
+    ##### ie. 1234 158a St -> 1234 158A St
+    address, reason = change_address(address, reason, "Capitalize Letter in Numbered Street") do |address|
+      if (match = address.match(/^([0-9]+)\s+([0-9]+[a-z])\s+(.*)/))
+        number, street1, street2, = match.captures
+        "#{number} #{street1.upcase} #{street2}"
+      else
+        address
+      end
+    end
+
+    ##### Use preferred street names
+    address, reason = change_address(address, reason, "Use Preferred Street Name Abbreviation") do |address|
+      @@preferred_street_names.each do |fix|
+        fix[:starts_with].each do |starts_with|
+          address = replace_street_name(address, starts_with, fix[:replace_with])
+        end
+      end
+      address
+    end
+
+    include_reason ? [address, reason] : address
+  end
+
+  def change_address(address, reason, new_reason)
+    # Make a copy in case the block changes the value
+    original_address = address
+    new_address = yield address
+    reason = reason.blank? ? new_reason : "#{reason}\n#{new_reason}" if original_address != new_address
+    [new_address, reason]
   end
 
   ##### This replaces the street name (assumed to be the last word in the address)
