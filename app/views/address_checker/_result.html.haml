@@ -85,3 +85,6 @@
                 %td= not_blank[:name]
                 %td= not_blank[:telephone]
                 %td= not_blank[:postal_code]
+
+-if !(@needs_manual_fixes || @needs_auto_fixes)
+  %h3.title.is-3 No Issues Found!
