@@ -20,3 +20,8 @@
 .choices__inner {
   background-color: unset;
 }
+
+td {
+  //preserve all spaces and newlines
+  white-space: pre-wrap
+}
