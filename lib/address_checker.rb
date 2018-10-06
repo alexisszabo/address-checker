@@ -43,7 +43,7 @@ module AddressChecker
       address_without_suite = sanitize_address(row['Address'])
       street_name = address_without_suite.split(/\s/).drop(1).join(' ')
       original_address = format_address(row['Suite'], row['Address'])
-      address = format_address(sanitize_suite(row['Suite']), sanitize_address(row['Address']))
+      address = format_address(sanitize_suite(row['Suite']), address_without_suite)
 
       if kind == 'Local' || statuses.include?(row['Status'])
         bad_address_format << {original: original_address, sanitized: address} if original_address != address && street_name.split.length >= 2
