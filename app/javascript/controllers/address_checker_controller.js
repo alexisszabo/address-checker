@@ -20,7 +20,7 @@ export default class extends Controller {
   displayResults (event) {
     const [data, status, xhr]  = event.detail;
     const json = JSON.parse(xhr.response);
-    if (json["html"]) {
+    if (json["html"] !== undefined) {
       // "Check Addresses" Mode
       this.resultsTarget.innerHTML = json["html"];
     } else {
