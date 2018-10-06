@@ -101,12 +101,23 @@ module AddressChecker
     new_address_rows = []
     address_rows.each do |row|
       ##### If an export tag is defined, we only export addresses that match the tag in the territory description
-      next if export_tag.present? && !row['Territory_description'].try(:match, /(^|\s+)#{export_tag}($|\s+)/)
+      next if purpose == 'Export' && export_tag.present? && !row['Territory_description'].try(:match, /(^|\s+)#{export_tag}($|\s+)/)
 
-      row['Address'] = sanitize_address(row['Address']) if fix_address
-
-      ##### Clear any specified fields
-      remove_options.each { |key| row[key] == '' } if remove_options
+      changed = false
+      if fix_address
+        new_address = sanitize_address(row['Address'])
+        if new_address != row['Address']
+          row['Address'] = new_address
+          changed = true
+        end
+      end
+      remove_options&.each do |key|
+        if row[key].present?
+          row[key] = ''
+          changed = true
+        end
+      end
+      next if purpose == 'Import' && !changed
 
       ##### If we're export addresses to another account, delete the keys associated with existing addresses/territories
       ##### We only need to clear the ones that will get exported later
