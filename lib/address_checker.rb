@@ -111,7 +111,7 @@ module AddressChecker
 
       changed = false
       if fix_address
-        new_address = sanitize_address(row['Address'])
+        new_address = sanitize_address(row['Address']).first
         if new_address != row['Address']
           row['Address'] = new_address
           changed = true
@@ -305,8 +305,6 @@ module AddressChecker
     reason = reason.blank? ? new_reason : "#{reason}\n#{new_reason}" if original_address != new_address
     [new_address, reason]
   end
-
-
 
   def sanitize_suite(suite)
     suite
