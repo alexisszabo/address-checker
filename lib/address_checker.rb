@@ -15,14 +15,14 @@ module AddressChecker
         city = filename.gsub('_',' ').gsub(/\.txt$/, '').gsub(/\S+/) {|word| word[0].capitalize + word[1..-1] }
         File.open(dir+'/'+filename, 'r') do |f|
           f.each_line do |line|
-            sanitized_address = sanitize_address(line.chomp)
+            sanitized_street_name = sanitize_street_name(line.chomp).first
             street_name_in_city[city] ||= {}
-            street_name_in_city[city][sanitized_address] = true
+            street_name_in_city[city][sanitized_street_name] = true
             full_street_name_in_city[city] ||= {}
-            street_name_without_identifier = sanitized_address.split[0..-2].join(' ')
+            street_name_without_identifier = sanitized_street_name.split[0..-2].join(' ')
             ambiguous_names[city] ||= {}
             ambiguous_names[city][street_name_without_identifier] = true if full_street_name_in_city[city][street_name_without_identifier]
-            full_street_name_in_city[city][street_name_without_identifier] = sanitized_address
+            full_street_name_in_city[city][street_name_without_identifier] = sanitized_street_name
           end
         end
       end
@@ -172,107 +172,137 @@ module AddressChecker
     suite ? "#{suite}, #{address}" : address
   end
 
-  def sanitize_address(address, include_reason=nil)
+  def sanitize_address(address) 
     reason = ''
 
-    address, reason = change_address(address, reason, "Remove Period") do |address|
-      address.delete('.')
+    ##### Full address checks:
+    address, reason = change_with_reason(address, reason, "Remove Double Space") do |a|
+      a.gsub(/\s\s/, ' ')
     end
 
-    address, reason = change_address(address, reason, "Remove Extra Space at End") do |address|
-      address.rstrip
-    end 
+    nothing, number, street_name = address.match('(^|\s+)(\S+)\s(.*)').captures
 
-    address, reason = change_address(address, reason, "Remove Extra Space at Beginning") do |address|
-      address.lstrip
+    ##### Number only check:
+    number, reason = change_with_reason(number, reason, "Remove Period") do |n|
+      n.delete('.')
     end
 
-    address, reason = change_address(address, reason, "Remove Double Space") do |address|
-      address.gsub(/\s\s/, ' ')
+    number, reason = change_with_reason(number, reason, "Remove Extra Space at Beginning") do |n|
+      n.lstrip
     end
 
-    address, reason = change_address(address, reason, "Capitalize Street Name") do |address|
-      address.gsub(/\S+/) { |word| /^[0-9]/.match(word) ? word : word[0].capitalize + word[1..-1] }
+    ###### Street Name Only checks:
+    street_name, reason = sanitize_street_name(street_name)
+
+    ["#{number} #{street_name}", reason]
+  end
+
+  ##### This routine is called stand-alone (to normalize addresses when loading from cities)
+  ##### It is also called as part of sanitize_address for checking addresses
+  def sanitize_street_name(street_name)
+    reason = ''
+
+    street_name, reason = change_with_reason(street_name, reason, "Remove Period") do |s|
+      s.delete('.')
     end
 
-    ##### Change directions in addresses unless the direction is the Street Name (ie. 1234 North Rd)
-    if address.split(/\s+/).length > 3
-      address, reason = change_address(address, reason, "Replace East with E") do |address|
-        address.gsub(/(^|\s+)East($|\s+)/i, '\1E\2')
+    street_name, reason = change_with_reason(street_name, reason, "Remove Extra Space at End") do |s|
+      s.rstrip
+    end
+
+    street_name, reason = change_with_reason(street_name, reason, "Remove Extra Space at Beginning") do |s|
+      s.lstrip
+    end
+
+    street_name, reason = change_with_reason(street_name, reason, "Remove Double Space") do |s|
+      s.gsub(/\s\s/, ' ')
+    end
+
+    street_name, reason = change_with_reason(street_name, reason, "Capitalize Street Name") do |s|
+      s.gsub(/\S+/) { |word| /^[0-9]/.match(word) ? word : word[0].capitalize + word[1..-1] }
+    end
+
+    ##### Change directions in street_namees unless the direction is the Street Name (ie. 1234 North Rd)
+    if street_name.split(/\s+/).length > 2
+      street_name, reason = change_with_reason(street_name, reason, "Replace East with E") do |s|
+        replace_word_in_sentence(s, 'East', 'E')
       end
-      address, reason = change_address(address, reason, "Replace West with W") do |address|
-        address.gsub(/(^|\s+)West($|\s+)/i, '\1W\2')
+      street_name, reason = change_with_reason(street_name, reason, "Replace West with W") do |s|
+        replace_word_in_sentence(s, 'West', 'W')
       end
-      address, reason = change_address(address, reason, "Replace North with N") do |address|
-        address.gsub(/(^|\s+)North($|\s+)/i, '\1N\2')
+      street_name, reason = change_with_reason(street_name, reason, "Replace North with N") do |s|
+        replace_word_in_sentence(s, 'North', 'N')
       end
-      address, reason = change_address(address, reason, "Replace South with S") do |address|
-        address.gsub(/(^|\s+)South($|\s+)/i, '\1S\2')
+      street_name, reason = change_with_reason(street_name, reason, "Replace South with S") do |s|
+        replace_word_in_sentence(s, 'South', 'S')
       end
-      address, reason = change_address(address, reason, "Replace NorthEast with NE") do |address|
-        address.gsub(/(^|\s+)Northeast($|\s+)/i, '\1NE\2')
+      street_name, reason = change_with_reason(street_name, reason, "Replace NorthEast with NE") do |s|
+        replace_word_in_sentence(s, 'Northeast', 'NE')
       end
-      address, reason = change_address(address, reason, "Replace NorthWest with NW") do |address|
-        address.gsub(/(^|\s+)Northwest($|\s+)/i, '\1NW\2')
+      street_name, reason = change_with_reason(street_name, reason, "Replace NorthWest with NW") do |s|
+        replace_word_in_sentence(s, 'Northwest', 'NW')
       end
-      address, reason = change_address(address, reason, "Replace SouthEast with SE") do |address|
-        address.gsub(/(^|\s+)Southeast($|\s+)/i, '\1SE\2')
+      street_name, reason = change_with_reason(street_name, reason, "Replace SouthEast with SE") do |s|
+        replace_word_in_sentence(s, 'Southeast', 'SE')
       end
-      address, reason = change_address(address, reason, "Replace Southwest with SW") do |address|
-        address.gsub(/(^|\s+)Southwest($|\s+)/i, '\1SW\2')
+      street_name, reason = change_with_reason(street_name, reason, "Replace Southwest with SW") do |s|
+        replace_word_in_sentence(s, 'Southwest', 'SW')
       end
     end
 
     ##### If street name has a direction at the end, put it in front of the street name (Vancouver)
-    ##### ie. 1234 49th Ave East -> 1234 E 49th Ave
-    address, reason = change_address(address, reason, "Put N/E/W/S in front of Numbered Street") do |address|
-      if (match = address.match(/(^[0-9]+)\s+([0-9]+)(st|nd|rd|th)\s+(\w+)\s+(E|W|N|S)(\s)(.*)/))
-        number, street1, street2, street3, direction, rest1, rest2 = match.captures
-        "#{number} #{direction[0].capitalize} #{street1}#{street2} #{street3}#{rest1}#{rest2}"
+    ##### ie. 49th Ave East -> E 49th Ave
+    street_name, reason = change_with_reason(street_name, reason, "Put N/E/W/S in front of Numbered Street") do |s|
+      if (match = s.match(/^([0-9]+)(st|nd|rd|th)\s+(\w+)\s+(E|W|N|S)$/))
+        street1, street2, street3, direction, rest1, rest2 = match.captures
+        "#{direction[0].capitalize} #{street1}#{street2} #{street3}#{rest1}#{rest2}"
       else
-        address
+        s
       end
     end
 
     ##### If street has a single letter, capitalize it (Surrey, Maple Ridge, etc)
-    ##### ie. 1234 158a St -> 1234 158A St
-    address, reason = change_address(address, reason, "Capitalize Letter in Numbered Street") do |address|
-      if (match = address.match(/^([0-9]+)\s+([0-9]+[a-z])\s+(.*)/))
-        number, street1, street2, = match.captures
-        "#{number} #{street1.upcase} #{street2}"
+    ##### ie. 158a St -> 158A St
+    street_name, reason = change_with_reason(street_name, reason, "Capitalize Letter in Numbered Street") do |s|
+      if (match = s.match(/^([0-9]+[a-z])\s+(.*)/))
+        street1, street2, = match.captures
+        "#{street1.upcase} #{street2}"
       else
-        address
+        s
       end
     end
 
     ##### Use preferred street names
-    address, reason = change_address(address, reason, "Use Preferred Street Name Abbreviation") do |address|
+    street_name, reason = change_with_reason(street_name, reason, "Use Preferred Street Name Abbreviation") do |s|
       @@preferred_street_names.each do |fix|
         fix[:starts_with].each do |starts_with|
-          address = replace_street_name(address, starts_with, fix[:replace_with])
+          ##### This replaces the street name (assumed to be the last word in the address)
+          ##### With the preferred abbreviation
+          ##### The abbreviation may have N/W/E/S after it, so check for that
+          s = s.gsub(Regexp.new(starts_with+'\S*($|\s(N|W|S|E)$)', Regexp::IGNORECASE), fix[:replace_with]+'\\1')
         end
       end
-      address
+      s
     end
 
-    include_reason ? [address, reason] : address
+    [street_name, reason]
   end
 
-  def change_address(address, reason, new_reason)
+  def replace_word_in_sentence(sentence, word, replacement)
+    sentence.gsub(/(^|\s+)#{word}($|\s+)/, "\\1#{replacement}\\2")
+  end
+
+  def change_with_reason(value, reason, new_reason)
     # Make a copy in case the block changes the value
-    original_address = address
-    new_address = yield address
+    original_address = value
+    new_address = yield value
     reason = reason.blank? ? new_reason : "#{reason}\n#{new_reason}" if original_address != new_address
     [new_address, reason]
   end
 
-  ##### This replaces the street name (assumed to be the last word in the address)
-  ##### With the preferred abbreviation
-  def replace_street_name(address, search, replace)
-    address.gsub(Regexp.new('(\s+)'+search+'\S*($|\s(N|W|S|E)$)', Regexp::IGNORECASE), '\\1'+replace+'\\2')
-  end
+
 
   def sanitize_suite(suite)
-    suite 
+    suite
   end
 end
