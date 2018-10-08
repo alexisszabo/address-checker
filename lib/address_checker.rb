@@ -40,7 +40,7 @@ module AddressChecker
     addresses.each do |row|
       next unless row['Address']
       next if kind == 'Local' && row['Kind'] != 'Local'
-      address_without_suite, reason = sanitize_address(row['Address'], true)
+      address_without_suite, reason = sanitize_address(row['Address'])
       street_name = address_without_suite.split(/\s/).drop(1).join(' ')
       original_address = format_address(row['Suite'], row['Address'])
       address = format_address(sanitize_suite(row['Suite']), address_without_suite)
@@ -77,7 +77,7 @@ module AddressChecker
           needs_to_be_blanked << hash
         end
 
-        if kind != 'Local'
+        if kind != 'Local' && %w[New Valid Do_not_call].include?(row['Status'])
           wrong_languages << "#{address}: #{row['Language']}" unless valid_languages.include? row['Language']
         end
         duplicate_addresses << address if all_database_addresses[address]
