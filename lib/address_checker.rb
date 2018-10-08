@@ -22,7 +22,8 @@ module AddressChecker
             street_name_without_identifier = sanitized_street_name.split[0..-2].join(' ')
             ambiguous_names[city] ||= {}
             ambiguous_names[city][street_name_without_identifier] = true if full_street_name_in_city[city][street_name_without_identifier]
-            full_street_name_in_city[city][street_name_without_identifier] = sanitized_street_name
+            full_street_name_in_city[city][street_name_without_identifier] ||= []
+            full_street_name_in_city[city][street_name_without_identifier] << sanitized_street_name
           end
         end
       end
@@ -42,6 +43,7 @@ module AddressChecker
       next if kind == 'Local' && row['Kind'] != 'Local'
       address_without_suite, reason = sanitize_address(row['Address'])
       street_name = address_without_suite.split(/\s/).drop(1).join(' ')
+      street_name_without_identifier = street_name.split[0..-2].join(' ')
       original_address = format_address(row['Suite'], row['Address'])
       address = format_address(sanitize_suite(row['Suite']), address_without_suite)
 
@@ -57,10 +59,14 @@ module AddressChecker
             if alternate_cities.length > 0
               wrong_cities << {address: "#{address}, #{row['City']}", suggested_city: alternate_cities.join(', or ')}
             else
-              possibilities = []
-              street_name_in_city[row['City']].each do |master_street, val|
-                m = Jaro.new(master_street)
-                possibilities << master_street if m.match(street_name) > 0.84
+              ##### If there is the same street name, but with a different identifier, in the same city, suggest that
+              unless (possibilities = full_street_name_in_city[row['City']][street_name_without_identifier])
+                possibilities = []
+                ##### Otherwise, check spelling
+                street_name_in_city[row['City']].each do |master_street, val|
+                  m = Jaro.new(master_street)
+                  possibilities << master_street if m.match(street_name) > 0.84
+                end
               end
               unknown_street_name << {address: "#{address}, #{row['City']}", possibilities: possibilities}
             end
