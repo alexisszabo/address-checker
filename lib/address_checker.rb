@@ -185,6 +185,9 @@ module AddressChecker
     address, reason = change_with_reason(address, reason, "Remove Double Space") do |a|
       a.gsub(/\s\s/, ' ')
     end
+    address, reason = change_with_reason(address, reason, "Remove Extra Space at Beginning") do |n|
+      n.lstrip
+    end
 
     if match = address.match('(^|\s+)(\S+)\s(.*)')
       nothing, number, street_name = match.captures
@@ -192,10 +195,6 @@ module AddressChecker
       ##### Number only check:
       number, reason = change_with_reason(number, reason, "Remove Period") do |n|
         n.delete('.')
-      end
-
-      number, reason = change_with_reason(number, reason, "Remove Extra Space at Beginning") do |n|
-        n.lstrip
       end
 
       ###### Street Name Only checks:
