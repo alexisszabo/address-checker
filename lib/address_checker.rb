@@ -288,7 +288,7 @@ module AddressChecker
           ##### This replaces the street name (assumed to be the last word in the address)
           ##### With the preferred abbreviation
           ##### The abbreviation may have N/W/E/S after it, so check for that
-          s = s.gsub(Regexp.new(starts_with+'\S*($|\s(N|W|S|E)$)', Regexp::IGNORECASE), fix[:replace_with]+'\\1')
+          s = s.gsub(Regexp.new('(\s+)' + starts_with + '\S*($|\s(N|W|S|E)$)', Regexp::IGNORECASE), '\\1'+fix[:replace_with]+'\\2')
         end
       end
       s
