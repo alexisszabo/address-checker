@@ -186,21 +186,25 @@ module AddressChecker
       a.gsub(/\s\s/, ' ')
     end
 
-    nothing, number, street_name = address.match('(^|\s+)(\S+)\s(.*)').captures
+    if match = address.match('(^|\s+)(\S+)\s(.*)')
+      nothing, number, street_name = match.captures
 
-    ##### Number only check:
-    number, reason = change_with_reason(number, reason, "Remove Period") do |n|
-      n.delete('.')
+      ##### Number only check:
+      number, reason = change_with_reason(number, reason, "Remove Period") do |n|
+        n.delete('.')
+      end
+
+      number, reason = change_with_reason(number, reason, "Remove Extra Space at Beginning") do |n|
+        n.lstrip
+      end
+
+      ###### Street Name Only checks:
+      street_name, reason = sanitize_street_name(street_name)
+
+      ["#{number} #{street_name}", reason]
+    else
+      [address, reason]
     end
-
-    number, reason = change_with_reason(number, reason, "Remove Extra Space at Beginning") do |n|
-      n.lstrip
-    end
-
-    ###### Street Name Only checks:
-    street_name, reason = sanitize_street_name(street_name)
-
-    ["#{number} #{street_name}", reason]
   end
 
   ##### This routine is called stand-alone (to normalize addresses when loading from cities)
