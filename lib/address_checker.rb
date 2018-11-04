@@ -36,6 +36,8 @@ module AddressChecker
     wrong_languages = []
     wrong_cities = []
     needs_to_be_blanked = []
+    change_to_valid = []
+
     all_database_addresses = {}
 
     addresses.each do |row|
@@ -83,6 +85,13 @@ module AddressChecker
           needs_to_be_blanked << hash
         end
 
+        ##### If the notes have "submitted" in them, they were passed over from another account
+        ##### and are likely already confirmed, so we are going to assume that they are valid
+        submitted = /submitted/i
+        if kind == 'Foreign-language' && row['Status'] == 'New' && (submitted.match(row['Notes']) || submitted.match(row['Notes_private']))
+          change_to_valid << address
+        end
+
         if kind != 'Local' && %w[New Valid Do_not_call].include?(row['Status'])
           wrong_languages << "#{address}: #{row['Language']}" unless valid_languages.include? row['Language']
         end
@@ -98,7 +107,8 @@ module AddressChecker
       unknown_cities:      unknown_cities,
       wrong_languages:     wrong_languages,
       wrong_cities:        wrong_cities,
-      needs_to_be_blanked: needs_to_be_blanked
+      needs_to_be_blanked: needs_to_be_blanked,
+      change_to_valid: change_to_valid,
     }
 
   end
@@ -280,6 +290,7 @@ module AddressChecker
         s
       end
     end
+
 
     ##### Use preferred street names
     street_name, reason = change_with_reason(street_name, reason, "Use Preferred Street Name Abbreviation") do |s|

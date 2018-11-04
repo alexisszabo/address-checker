@@ -44,7 +44,6 @@ class AddressCheckerController < ApplicationController
 
   def render_result_view_to_string(address_rows)
     result = check_addresses(address_rows, params[:kind], params[:country], params[:province], params[:valid_languages], params[:statuses])
-
     @can_auto_fix = (params[:kind] == 'Foreign-language')
     @duplicate_addresses = result[:duplicate_addresses]
     @unknown_street_name = result[:unknown_street_name]
@@ -52,6 +51,7 @@ class AddressCheckerController < ApplicationController
     @wrong_languages     = result[:wrong_languages]
     @wrong_cities        = result[:wrong_cities]
     @needs_to_be_blanked = result[:needs_to_be_blanked]
+    @change_to_valid     = result[:change_to_valid]
     @needs_manual_fixes  = [@duplicate_addresses, @unknown_street_name, @unknown_cities, @wrong_languages, @wrong_cities, @needs_to_be_blanked].any? { |a| a.length > 1 }
     @bad_address_format  = result[:bad_address_format]
     @needs_auto_fixes    = @bad_address_format.length > 0

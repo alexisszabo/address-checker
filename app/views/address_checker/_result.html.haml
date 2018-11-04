@@ -54,39 +54,47 @@
             %td= text
 
 -if @needs_auto_fixes
-  -if @bad_address_format.length > 0
-    -if @can_auto_fix
-      %h3.title.is-3 Automatic Fixes
-      %h5.subtitle.is-6 The Addresses below can be automatically fixed in the downloaded file. Please review before downloading and let us know if any issues.
+  -if @can_auto_fix
+    %h3.title.is-3 Automatic Fixes
+    %h5.subtitle.is-6 The Addresses below can be automatically fixed in the downloaded file. Please review before downloading and let us know if any issues.
     .box
-      -unless @can_auto_fix
-        %h4.title.is-4 Wrong Address Format. Please fix:
-      %table.table.is-bordered.is-striped.is-hoverable
-        %tr
-          %th Original
-          %th Fixed
-          %th Reason
-        - @bad_address_format.each do |bad|
+      -unless @bad_address_format.empty?
+        %h4.title.is-4= @can_auto_fix ? "Address Format Can Be Auto-corrected" : "Wrong Address Format. Please fix:"
+        %h6.subtitle.is-6 A standard address format allows addresses to be sorted correctly when printed
+        %table.table.is-bordered.is-striped.is-hoverable
           %tr
-            %td= bad[:original]
-            %td= bad[:sanitized]
-            %td= bad[:reason]
-      -if @needs_to_be_blanked.length > 0
-        .box
-          %h4.title.is-4 Remove Details:
-          %h6.subtitle.is-6 Keep in mind local privacy laws
-          %table.table.is-bordered.is-striped.is-hoverable
+            %th Original
+            %th Fixed
+            %th Reason
+          - @bad_address_format.each do |bad|
             %tr
-              %th Address
-              %th Name
-              %th Telephone
-              %th Postal Code
-            - @needs_to_be_blanked.each do |not_blank|
-              %tr
-                %td= not_blank[:address]
-                %td= not_blank[:name]
-                %td= not_blank[:telephone]
-                %td= not_blank[:postal_code]
+              %td= bad[:original]
+              %td= bad[:sanitized]
+              %td= bad[:reason]
+      -unless @change_to_valid.empty?
+        %h4.title.is-4= @can_auto_fix ? "Status can be changed to Valid" : "Status should be changed to valid. Please update:"
+        %h6.subtitle.is-6 This call looks like it was passed over from another account, so it is likely already a valid address.
+        %table.table.is-bordered.is-striped.is-hoverable
+          %tr Address
+          - @change_to_valid.each do |address|
+            %tr
+              %td= address
+
+      -unless @needs_to_be_blanked.empty?
+        %h4.title.is-4 Remove Details:
+        %h6.subtitle.is-6 Keep in mind local privacy laws
+        %table.table.is-bordered.is-striped.is-hoverable
+          %tr
+            %th Address
+            %th Name
+            %th Telephone
+            %th Postal Code
+          - @needs_to_be_blanked.each do |not_blank|
+            %tr
+              %td= not_blank[:address]
+              %td= not_blank[:name]
+              %td= not_blank[:telephone]
+              %td= not_blank[:postal_code]
 
 -if !(@needs_manual_fixes || @needs_auto_fixes)
   %h3.title.is-3 No Issues Found!
