@@ -87,8 +87,7 @@ module AddressChecker
 
         ##### If the notes have "submitted" in them, they were passed over from another account
         ##### and are likely already confirmed, so we are going to assume that they are valid
-        submitted = /submitted/i
-        if kind == 'Foreign-language' && row['Status'] == 'New' && (submitted.match(row['Notes']) || submitted.match(row['Notes_private']))
+        if kind == 'Foreign-language' && change_to_valid?(row)
           change_to_valid << address
         end
 
@@ -113,7 +112,7 @@ module AddressChecker
 
   end
 
-  def fix_addresses(address_rows, purpose, export_tag, fix_address, remove_options)
+  def fix_addresses(address_rows, purpose, export_tag, fix_address, remove_options, change_to_valid)
     new_address_rows = []
     address_rows.each do |row|
       ##### If an export tag is defined, we only export addresses that match the tag in the territory description
@@ -132,6 +131,10 @@ module AddressChecker
           row[key] = ''
           changed = true
         end
+      end
+      if change_to_valid?(row)
+        row['Status'] = 'Valid'
+        changed = true
       end
       next if purpose == 'Import' && !changed
 
@@ -162,6 +165,11 @@ module AddressChecker
   end
 
   private
+
+  def change_to_valid?(row)
+    submitted = /submitted/i
+    row['Status'] == 'New' && (submitted.match(row['Notes']) || submitted.match(row['Notes_private']))
+  end
 
   ##### These are taken from:
   #####   Canada Post "Symbols and Abbreviations Recognized by Canada Post"

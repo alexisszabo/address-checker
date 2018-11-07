@@ -61,7 +61,7 @@ class AddressCheckerController < ApplicationController
   end
 
   def generate_csv(address_rows)
-    address_rows = fix_addresses(address_rows, params[:purpose], params[:export_tag], params[:autofix], params[:remove])
+    address_rows = fix_addresses(address_rows, params[:purpose], params[:export_tag], params[:autofix], params[:remove], params[:change_to_valid])
     return convert_addresses_to_csv_string(address_rows)
   end
 end

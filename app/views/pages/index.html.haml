@@ -67,6 +67,9 @@
             .control
               = check_box_tag 'autofix', 'autofix', true
               = label_tag 'autofix', 'Autofix Addresss'
+            .control
+              = check_box_tag 'change_to_valid', 'change_to_valid', true
+              = label_tag 'change_to_valid', 'Change NEW status addresses to VALID status if they have "Submitted" in the notes'
             - @remove_options.each do |remove|
               .control
                 = check_box_tag 'remove[]', remove, false
