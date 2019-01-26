@@ -295,6 +295,7 @@ Bentley Place
 Berg Road
 Beverly Drive
 Birch Place
+Birch Springs Lane
 Bison Place
 Blake Drive
 Blake Place
@@ -352,6 +353,7 @@ Cayton Place
 Cedar Crescent
 Cedar Tree Lane
 Cedarbrook Place
+Cedar Springs Drive
 Centennial Parkway
 Central Avenue
 Centre Street
@@ -490,6 +492,7 @@ Ferry Causeway
 Ferry Road
 Filey Drive
 Fircrest Drive
+Fir Springs Lane
 Forest Place
 Forest Way
 Fosters Way
@@ -666,6 +669,7 @@ Malton Drive
 Malvern Place
 Maple Crescent
 Maple Lane
+Maple Springs Lane
 Maplewood Place
 Mariner Place
 Martin Road
@@ -906,6 +910,7 @@ Whitworth Crescent South
 Wildwood Crescent
 Williams Avenue
 Willow Place
+Willow Springs Ave
 Wilmington Drive
 Wilson Avenue
 Wilson Drive
