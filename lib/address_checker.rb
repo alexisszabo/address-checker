@@ -117,7 +117,6 @@ module AddressChecker
     address_rows.each do |row|
       ##### If an export tag is defined, we only export addresses that match the tag in the territory description
       next if purpose == 'Export' && export_tag.present? && !row['Territory_description'].try(:match, /(^|\s+)#{export_tag}($|\s+)/)
-
       changed = false
       if fix_address
         new_address = sanitize_address(row['Address']).first
@@ -198,6 +197,7 @@ module AddressChecker
 
   def sanitize_address(address) 
     reason = ''
+    return [address, reason] unless address
 
     ##### Full address checks:
     address, reason = change_with_reason(address, reason, "Remove Double Space") do |a|
@@ -207,7 +207,7 @@ module AddressChecker
       n.lstrip
     end
 
-    if match = address.match('(^|\s+)(\S+)\s(.*)')
+    if (match = address.match('(^|\s+)(\S+)\s(.*)'))
       nothing, number, street_name = match.captures
 
       ##### Number only check:
