@@ -252,6 +252,7 @@ Barker Avenue
 Barnsdale Street
 Battle Avenue
 Beckley Street
+Beecham Place
 Bell Avenue
 Berry Avenue
 Best Street
@@ -329,6 +330,7 @@ Eagle Avenue
 Edge Street
 Edgedale Avenue
 Eltham Street
+Erskine Street
 Evans Street
 Exeter Avenue
 Faber Crescent
@@ -355,6 +357,7 @@ Gilley Avenue
 Gillis Place
 Glenhurst Street
 Glenwood Avenue
+Godwin Drive
 Golden Ears Park Campgrnd
 Golden Ears Park Road
 Golden Ears Way
