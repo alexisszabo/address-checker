@@ -42,7 +42,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 
 gem 'haml'
 gem 'haml-rails'
-gem 'lockup', git: 'https://github.com/mvanh/lockup.git', branch: 'add_credentials_support'
+gem 'lockup'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

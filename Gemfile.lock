@@ -1,11 +1,3 @@
-GIT
-  remote: https://github.com/mvanh/lockup.git
-  revision: 31b3dc1dc726aa27b346e160b04fa30b17ff5ccc
-  branch: add_credentials_support
-  specs:
-    lockup (1.4.3)
-      rails (>= 3, < 6)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -129,6 +121,8 @@ GEM
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
       ruby_dep (~> 1.2)
+    lockup (1.5.1)
+      rails (>= 3, < 6.1)
     loofah (2.2.2)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -269,7 +263,7 @@ DEPENDENCIES
   haml-rails
   jbuilder (~> 2.5)
   listen (>= 3.0.5, < 3.2)
-  lockup!
+  lockup
   pg
   puma (~> 3.11)
   rails (~> 5.2.1)
@@ -287,4 +281,4 @@ RUBY VERSION
    ruby 2.5.3p105
 
 BUNDLED WITH
-   1.16.6
+   1.17.3
