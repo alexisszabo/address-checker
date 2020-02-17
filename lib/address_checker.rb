@@ -92,7 +92,7 @@ module AddressChecker
         end
 
         if kind != 'Local' && %w[New Valid Do_not_call].include?(row['Status'])
-          wrong_languages << "#{address}: #{row['Language']}" unless valid_languages.include? row['Language']
+          wrong_languages << "#{address}: #{row['Language']}" unless row['Language'].blank? || valid_languages.include? row['Language']
         end
         duplicate_addresses << address if all_database_addresses[address]
       end
