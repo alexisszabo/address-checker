@@ -188,7 +188,7 @@ module AddressChecker
       {starts_with: %w(Road),          replace_with: 'Rd'},
       {starts_with: %w(Square),        replace_with: 'Sq'},
       {starts_with: %w(St),            replace_with: 'St'},
-      {starts_with: %w(Wy[^n]),        replace_with: 'Way'} // Wynd is ok!
+      {starts_with: %w(Wy[^n]),        replace_with: 'Way'} # Wynd is ok!
     ]
 
   def format_address(suite, address)
