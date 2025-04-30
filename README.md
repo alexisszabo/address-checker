@@ -1,24 +1,36 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This application is used to clean up address lists in a specific version. It:
 
-Things you may want to cover:
+* Normalizes addresses
+  - Removes unneeded whitespace
+  - Capitalizes street names
+  - Abbreviates North/East/West/South
+  - Uses preferred street abbreviations
+  - Replaces misspelled streets
+* Suggests manual changes when confidence level is not high for automatic fixing
 
-* Ruby version
+All changes/suggestions are summarized in the browser after running
 
-* System dependencies
+The output is a CSV file which can be used to import back into the source
+application to overwrite the original addresses
 
-* Configuration
+## Dependencies
 
-* Database creation
+Ruby 3.3
+Node 20
 
-* Database initialization
+bundle install
+yarn install
 
-* How to run the test suite
+## Database initialization
 
-* Services (job queues, cache servers, search engines, etc.)
+rake db:migrate
 
-* Deployment instructions
+## How to run the test suite
 
-* ...
+rails test -v
+
+## Deployment instructions
+
+cap production deploy
