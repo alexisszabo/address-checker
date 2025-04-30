@@ -17,20 +17,19 @@ application to overwrite the original addresses
 
 ## Dependencies
 
-Ruby 3.3
-Node 20
-
-bundle install
-yarn install
+- Ruby 3.3
+- Node 20
+- `bundle install`
+- `yarn install`
 
 ## Database initialization
 
-rake db:migrate
+`rake db:migrate`
 
 ## How to run the test suite
 
-rails test -v
+`rails test -v`
 
 ## Deployment instructions
 
-cap production deploy
+`cap production deploy`
