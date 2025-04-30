@@ -166,8 +166,7 @@ module AddressChecker
   private
 
   def change_to_valid?(row)
-    submitted = /submitted/i
-    row['Status'] == 'New' && (submitted.match(row['Notes']) || submitted.match(row['Notes_private']))
+    row['Status'] == 'New'
   end
 
   ##### These are taken from:
