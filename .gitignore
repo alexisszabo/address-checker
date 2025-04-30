@@ -28,9 +28,11 @@
 .byebug_history
 
 # Ignore master key for decrypting credentials and more.
-/config/nginx.config
-/config/deploy.rb
 /config/master.key
+# TODO: properly store secrets for nginx.config and deploy.rb
+/config/nginx.conf
+/config/deploy.rb
+
 /public/packs
 /public/packs-test
 /node_modules
